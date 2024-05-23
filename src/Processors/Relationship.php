@@ -23,9 +23,17 @@ class Relationship extends Base {
 	private function migrate_values( $id ) {
 		list( $item_id, $related_item_id, $slug, $weight ) = $this->get_data( $id );
 		global $wpdb;
-		$sql = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
-		$wpdb->query( $wpdb->prepare( $sql, (int) $item_id, (int) $related_item_id, $slug, (int) $weight ) );
-
+		$sql    = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
+		$from   = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
+		$object = (object) [ 
+			'from' => $item_id,
+			'to'   => $related_item_id,
+		];
+		if ( self::objectInArray( $object, $from ) ) {
+			return;
+		} else {
+			$wpdb->query( $wpdb->prepare( $sql, (int) $item_id, (int) $related_item_id, $slug, (int) $weight ) );
+		}
 	}
 
 	private function get_data( $id ) {
@@ -50,5 +58,13 @@ class Relationship extends Base {
 		global $wpdb;
 		$sql = "SELECT `{$col}`  FROM `{$wpdb->prefix}{$table}` WHERE `{$conditional_col}`=%s";
 		return $wpdb->get_col( $wpdb->prepare( $sql, $conditional_value ) );
+	}
+	private function objectInArray( $object, $array ) {
+		foreach ( $array as $item ) {
+			if ( $item->from === $object->from && $item->to === $object->to ) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
