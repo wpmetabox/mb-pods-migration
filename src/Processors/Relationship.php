@@ -25,6 +25,7 @@ class Relationship extends Base {
 		global $wpdb;
 		$sql    = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
 		$from   = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
+		$weight += 1;
 		$object = (object) [ 
 			'from' => $item_id,
 			'to'   => $related_item_id,
