@@ -8,6 +8,10 @@
 		printMessage( i18n.start );
 
 		await resetCounter();
+		printMessage( i18n.migratingPostTypes );
+		await migrate( 'post_types' );
+
+		await resetCounter();
 		printMessage( i18n.migratingRelationship );
 		await migrate( 'relationship' );
 
