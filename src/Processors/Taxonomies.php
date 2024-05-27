@@ -12,7 +12,7 @@ class Taxonomies extends Base {
 			return [];
 		}
 
-		$query = new WP_Query( [ 
+		$query = new WP_Query( [
 			'post_type'              => '_pods_pod',
 			'post_status'            => 'any',
 			'posts_per_page'         => -1,
@@ -40,7 +40,6 @@ class Taxonomies extends Base {
 
 	protected function migrate_item() {
 		$items = $this->get_items();
-		//v( $items );
 		foreach ( $items as $item ) {
 			$type  = get_post_meta( $item->ID, 'type' );
 			$name  = $item->post_title;
@@ -48,7 +47,7 @@ class Taxonomies extends Base {
 			$build = $this->get_build_term( $slug );
 			$types = $this->get_name_post_type( $build );
 			if ( implode( $type ) === 'taxonomy' ) {
-				$labels  = [ 
+				$labels  = [
 					'name'                     => esc_html__( $name, 'mb-pods-migration' ),
 					'singular_name'            => esc_html__( $name, 'mb-pods-migration' ),
 					'add_new'                  => esc_html__( 'Add new', 'mb-pods-migration' ),
@@ -81,7 +80,7 @@ class Taxonomies extends Base {
 					'item_scheduled'           => esc_html__( $name . ' scheduled.', 'mb-pods-migration' ),
 					'item_updated'             => esc_html__( $name . ' updated.', 'mb-pods-migration' ),
 				];
-				$args    = [ 
+				$args    = [
 					'slug'                => $slug,
 					'types'               => $types,
 					'label'               => esc_html__( $name, 'mb-pods-migration' ),
@@ -106,7 +105,7 @@ class Taxonomies extends Base {
 					'capability_type'     => 'post',
 					'supports'            => [ 'title', 'editor', 'thumbnail' ],
 					'taxonomies'          => [],
-					'rewrite'             => [ 
+					'rewrite'             => [
 						'with_front' => false,
 					],
 				];
@@ -114,12 +113,12 @@ class Taxonomies extends Base {
 				$content = str_replace( '"1"', 'true', $content );
 				$post_id = $this->get_id_by_slug( $slug, 'mb-taxonomy' );
 				if ( $post_id ) {
-					wp_update_post( [ 
+					wp_update_post( [
 						'ID'           => $post_id,
 						'post_content' => $content,
 					] );
 				} else {
-					wp_insert_post( [ 
+					wp_insert_post( [
 						'post_content' => $content,
 						'post_type'    => 'mb-taxonomy',
 						'post_title'   => $name,
@@ -130,7 +129,7 @@ class Taxonomies extends Base {
 			}
 		}
 
-		wp_send_json_success( [ 
+		wp_send_json_success( [
 			'message' => __( 'Done', 'mb-pods-migration' ),
 			'type'    => 'done',
 		] );
