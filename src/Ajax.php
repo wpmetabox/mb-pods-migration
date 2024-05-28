@@ -13,7 +13,7 @@ class Ajax {
 		}
 		$_SESSION[ 'processed' ] = 0;
 
-		wp_send_json_success( [
+		wp_send_json_success( [ 
 			'message' => '',
 			'type'    => 'continue',
 		] );
@@ -29,7 +29,7 @@ class Ajax {
 
 	private function get_processor() {
 		$type = filter_input( INPUT_GET, 'type', FILTER_SANITIZE_STRING );
-		if ( ! in_array( $type, [
+		if ( ! in_array( $type, [ 
 			'post_types',
 			'taxonomies',
 			'field_groups',
