@@ -114,7 +114,7 @@ class FieldGroups extends Base {
 
 	private function migrate_location() {
 		$post_parent = $this->item->post_parent;
-		$object_type = get_post_meta( $post_parent, 'object' );
+		$object_type = get_post_meta( $post_parent, 'type' );
 
 		$this->settings[ 'object_type' ] = implode( $object_type );
 		$this->settings[ 'post_types' ]  = $object_type;

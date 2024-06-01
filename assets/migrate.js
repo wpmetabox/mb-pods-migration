@@ -23,6 +23,10 @@
 		printMessage( i18n.migratingRelationship );
 		await migrate( 'relationship' );
 
+		await resetCounter();
+		printMessage( i18n.migratingSettingsPages );
+		await migrate( 'settings_pages' );
+
 		printMessage( i18n.done );
 	} );
 

@@ -12,7 +12,7 @@ abstract class Base {
 	public function migrate() {
 		$items = $this->get_items();
 		if ( empty( $items ) ) {
-			wp_send_json_success( [ 
+			wp_send_json_success( [
 				'message' => __( 'Done', 'mb-pods-migration' ),
 				'type'    => 'done',
 			] );
@@ -26,7 +26,7 @@ abstract class Base {
 		$output = array_filter( $output );
 
 		$_SESSION[ 'processed' ] += count( $items );
-		wp_send_json_success( [ 
+		wp_send_json_success( [
 			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION[ 'processed' ] ) . '<br>' . implode( '<br>', $output ),
 			'type'    => 'continue',
 		] );
@@ -66,10 +66,8 @@ abstract class Base {
 		if ( ! $slug ) {
 			return null;
 		}
-		$s   = '"slug":' . '"' . $slug . '"';
-		$s   = '%' . $wpdb->esc_like( $s ) . '%';
-		$sql = "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_content LIKE %s";
-		$id  = $wpdb->get_var( $wpdb->prepare( $sql, $post_type, $s ) );
+		$sql = "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s";
+		$id  = $wpdb->get_var( $wpdb->prepare( $sql, $post_type, $slug ) );
 
 		return $id;
 	}
