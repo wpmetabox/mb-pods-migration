@@ -16,6 +16,10 @@
 		await migrate( 'taxonomies' );
 
 		await resetCounter();
+		printMessage( i18n.migratingTerms );
+		await migrate( 'terms' );
+
+		await resetCounter();
 		printMessage( i18n.migratingFieldGroups );
 		await migrate( 'field_groups' );
 
