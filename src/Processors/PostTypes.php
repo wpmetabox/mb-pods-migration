@@ -12,7 +12,7 @@ class PostTypes extends Base {
 			return [];
 		}
 
-		$query = new WP_Query( [
+		$query = new WP_Query( [ 
 			'post_type'              => '_pods_pod',
 			'post_status'            => 'any',
 			'posts_per_page'         => -1,
@@ -27,11 +27,25 @@ class PostTypes extends Base {
 	protected function migrate_item() {
 		$items = $this->get_items();
 		foreach ( $items as $key => $item ) {
-			$tax  = get_post_meta( $item->ID, 'type' );
-			$name = $item->post_title;
-			$slug = $item->post_name;
+			$tax           = get_post_meta( $item->ID, 'type' );
+			$name          = $item->post_title;
+			$slug          = $item->post_name;
+			$url           = "http";
+			$menu_icon     = get_post_meta( $item->ID, 'menu_icon' );
+			$menu_position = get_post_meta( $item->ID, 'menu_position' );
+			if ( ! implode( $menu_icon ) ) {
+				$icon_type = 'dashicons';
+				$menu_icon = 'dashicons-admin-generic';
+			} else {
+				$icon_type = 'dashicons';
+				$menu_icon = implode( $menu_icon );
+			}
+			if ( strpos( $menu_icon, $url ) !== false ) {
+				$icon_type   = 'custom';
+				$icon_custom = $menu_icon;
+			}
 			if ( implode( $tax ) === 'post_type' ) {
-				$labels  = [
+				$labels  = [ 
 					'name'                     => esc_html__( $name, 'mb-pods-migration' ),
 					'singular_name'            => esc_html__( $name, 'mb-pods-migration' ),
 					'add_new'                  => esc_html__( 'Add new', 'mb-pods-migration' ),
@@ -64,7 +78,7 @@ class PostTypes extends Base {
 					'item_scheduled'           => esc_html__( $name . ' scheduled.', 'mb-pods-migration' ),
 					'item_updated'             => esc_html__( $name . ' updated.', 'mb-pods-migration' ),
 				];
-				$args    = [
+				$args    = [ 
 					'slug'                => $slug,
 					'label'               => esc_html__( $name, 'mb-pods-migration' ),
 					'labels'              => $labels,
@@ -83,12 +97,14 @@ class PostTypes extends Base {
 					'has_archive'         => true,
 					'rest_base'           => '',
 					'show_in_menu'        => true,
-					'menu_position'       => '',
-					'menu_icon'           => 'dashicons-admin-generic',
+					'menu_position'       => $menu_position,
+					'icon_type'           => $icon_type,
+					'menu_icon'           => $menu_icon,
+					'icon_custom'         => $icon_custom,
 					'capability_type'     => 'post',
 					'supports'            => [ 'title', 'editor', 'thumbnail' ],
 					'taxonomies'          => [],
-					'rewrite'             => [
+					'rewrite'             => [ 
 						'with_front' => false,
 					],
 				];
@@ -96,12 +112,12 @@ class PostTypes extends Base {
 				$content = str_replace( '"1"', 'true', $content );
 				$post_id = $this->get_id_by_slug( $slug, 'mb-post-type' );
 				if ( $post_id ) {
-					wp_update_post( [
+					wp_update_post( [ 
 						'ID'           => $post_id,
 						'post_content' => $content,
 					] );
 				} else {
-					wp_insert_post( [
+					wp_insert_post( [ 
 						'post_content' => $content,
 						'post_type'    => 'mb-post-type',
 						'post_title'   => $name,
@@ -110,12 +126,20 @@ class PostTypes extends Base {
 					] );
 				}
 			}
+			$this->disable_post( $item );
 		}
 
-		wp_send_json_success( [
+		wp_send_json_success( [ 
 			'message' => __( 'Done', 'mb-pods-migration' ),
 			'type'    => 'done',
 		] );
 	}
 
+	private function disable_post( $group ) {
+		$data = [ 
+			'ID'          => $group->ID,
+			'post_status' => 'draft',
+		];
+		wp_update_post( $data );
+	}
 }
