@@ -18,7 +18,7 @@ class SettingsPages extends Base {
 			return [];
 		}
 
-		$query = new WP_Query( [
+		$query = new WP_Query( [ 
 			'post_type'              => '_pods_pod',
 			'post_status'            => 'publish',
 			'posts_per_page'         => -1,
@@ -36,10 +36,12 @@ class SettingsPages extends Base {
 			return [];
 		}
 
-		$query = new WP_Query( [
+		$query = new WP_Query( [ 
 			'post_type'              => '_pods_field',
 			'post_status'            => 'publish',
 			'posts_per_page'         => -1,
+			'order'                  => 'ASC',
+			'orderby'                => 'ID',
 			'no_found_rows'          => true,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
@@ -59,53 +61,56 @@ class SettingsPages extends Base {
 			return;
 		}
 		$settings = $this->item;
+		$type     = get_post_meta( $settings->ID, 'type' );
 
-		$data    = [
-			'post_title'  => $settings->post_title,
-			'post_type'   => 'mb-settings-page',
-			'post_status' => 'publish',
-			'post_name'   => $settings->post_name,
-		];
-		$post_id = $this->get_id_by_slug( $settings->post_name, 'mb-settings-page' );
-		if ( $post_id ) {
-			$this->post_id = $data[ 'ID' ] = $post_id;
-			wp_update_post( $data );
-		} else {
-			$this->post_id = wp_insert_post( $data );
-		}
+		if ( implode( $type ) == 'settings' ) {
+			$data    = [ 
+				'post_title'  => $settings->post_title,
+				'post_type'   => 'mb-settings-page',
+				'post_status' => 'publish',
+				'post_name'   => $settings->post_name,
+			];
+			$post_id = $this->get_id_by_slug( $settings->post_name, 'mb-settings-page' );
+			if ( $post_id ) {
+				$this->post_id = $data[ 'ID' ] = $post_id;
+				wp_update_post( $data );
+			} else {
+				$this->post_id = wp_insert_post( $data );
+			}
 
-		$menu_location = get_post_meta( $settings->ID, 'menu_location' );
-		$icon_url      = 'dashicons-admin-generic';
-		$menu_type     = '';
-		switch ( implode( $menu_location ) ) {
-			case 'appearances':
-				$parent = 'themes.php';
-				break;
-			case 'submenu':
-				$parent = implode( get_post_meta( $settings->ID, 'menu_location_custom' ) );
-				break;
-			case 'top':
-				$parent = '';
-				$menu_type = 'top';
-			default:
-				$parent = 'options-general.php';
-				break;
+			$menu_location = get_post_meta( $settings->ID, 'menu_location' );
+			$icon_url      = 'dashicons-admin-generic';
+			$menu_type     = '';
+			switch ( implode( $menu_location ) ) {
+				case 'appearances':
+					$parent = 'themes.php';
+					break;
+				case 'submenu':
+					$parent = implode( get_post_meta( $settings->ID, 'menu_location_custom' ) );
+					break;
+				case 'top':
+					$parent = '';
+					$menu_type = 'top';
+				default:
+					$parent = 'options-general.php';
+					break;
+			}
+			$parser = [ 
+				'menu_title' => $settings->post_title,
+				'id'         => $settings->post_name,
+				'menu_type'  => $menu_type,
+				'parent'     => $parent,
+				'icon_url'   => $icon_url,
+				'style'      => 'no-boxes',
+				'columns'    => 1,
+			];
+			update_post_meta( $this->post_id, 'settings', $parser );
+			update_post_meta( $this->post_id, 'settings_page', $parser );
 		}
-		$parser = [
-			'menu_title' => $settings->post_title,
-			'id'         => $settings->post_name,
-			'menu_type'  => $menu_type,
-			'parent'     => $parent,
-			'icon_url'   => $icon_url,
-			'style'      => 'no-boxes',
-			'columns'    => 1,
-		];
-		update_post_meta( $this->post_id, 'settings', $parser );
-		update_post_meta( $this->post_id, 'settings_page', $parser );
 	}
 
 	private function get_groups() {
-		$query = new WP_Query( [
+		$query = new WP_Query( [ 
 			'post_type'              => '_pods_group',
 			'post_status'            => 'publish',
 			'posts_per_page'         => -1,
@@ -128,7 +133,7 @@ class SettingsPages extends Base {
 				$this->fields   = [];
 				$setting        = $this->migrate_settings( $group );
 				$fields         = $this->migrate_field( $group );
-				$data           = [
+				$data           = [ 
 					'post_name'  => $group->post_name,
 					'post_title' => $group->post_title,
 					'fields'     => $fields,
@@ -138,7 +143,7 @@ class SettingsPages extends Base {
 				$parser->parse();
 				$this->create_post( $group );
 				update_post_meta( $this->post_id, 'fields', $fields );
-				update_post_meta( $this->post_id, '	', $setting );
+				update_post_meta( $this->post_id, 'settings', $setting );
 				update_post_meta( $this->post_id, 'meta_box', $parser->get_settings() );
 
 				$this->disable_post( $group );
@@ -147,7 +152,7 @@ class SettingsPages extends Base {
 	}
 
 	private function create_post( $group ) {
-		$data = [
+		$data = [ 
 			'post_title'        => $group->post_title,
 			'post_type'         => 'meta-box',
 			'post_status'       => $group->post_status,
@@ -217,7 +222,7 @@ class SettingsPages extends Base {
 					break;
 				case 'boolean':
 					$type = 'radio';
-					$option = [
+					$option = [ 
 						'1' => __( 'Yes', 'mb-pods-migration' ),
 						'0' => __( 'No', 'mb-pods-migration' ),
 					];
@@ -235,7 +240,7 @@ class SettingsPages extends Base {
 			}
 			$group_id = get_post_meta( $id, 'group' );
 			if ( implode( $group_id ) == $group->ID ) {
-				$args[] = [
+				$args[] = [ 
 					'name'       => $name,
 					'id'         => $slug,
 					'type'       => $type,
@@ -261,7 +266,7 @@ class SettingsPages extends Base {
 		update_option( $this->item->post_name, $args );
 	}
 	private function disable_post( $group ) {
-		$data = [
+		$data = [ 
 			'ID'          => $group->ID,
 			'post_status' => 'draft',
 		];
