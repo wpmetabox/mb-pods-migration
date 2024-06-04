@@ -10,7 +10,7 @@
 		"custom-fields",
 		"custom-field"
 	],
-	"description": "Migrate Toolset custom fields to Meta Box",
+	"description": "Migrate Pods custom fields to Meta Box",
 	"homepage": "https://metabox.io",
 	"license": "GPL-2.0",
 	"autoload": {
