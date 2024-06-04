@@ -21,9 +21,9 @@ if ( ! function_exists( 'mb_pods_load' ) ) {
 	add_action( 'init', 'mb_pods_load', 0 );
 
 	function mb_pods_load() {
-		// if ( ! defined( 'RWMB_VER' ) || ! defined( 'TYPES_VERSION' ) || ! is_admin() ) {
-		// 	return;
-		// }
+		if ( ! defined( 'RWMB_VER' ) || ! defined( 'PODS_VERSION' ) || ! is_admin() ) {
+			return;
+		}
 
 		define( 'MBPODS_DIR', __DIR__ );
 
