@@ -21,7 +21,7 @@ if ( ! function_exists( 'mb_pods_load' ) ) {
 	add_action( 'init', 'mb_pods_load', 0 );
 
 	function mb_pods_load() {
-		if ( ! defined( 'RWMB_VER' ) || ! is_admin() ) {
+		if ( ! defined( 'RWMB_VER' ) || ! defined( 'PODS_DIR' ) || ! is_admin() ) {
 			return;
 		}
 
