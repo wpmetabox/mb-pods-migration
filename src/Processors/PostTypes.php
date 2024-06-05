@@ -27,12 +27,14 @@ class PostTypes extends Base {
 	protected function migrate_item() {
 		$items = $this->get_items();
 		foreach ( $items as $key => $item ) {
-			$tax           = get_post_meta( $item->ID, 'type' );
-			$name          = $item->post_title;
-			$slug          = $item->post_name;
-			$url           = "http";
-			$menu_icon     = get_post_meta( $item->ID, 'menu_icon' );
-			$menu_position = get_post_meta( $item->ID, 'menu_position' );
+			$tax             = get_post_meta( $item->ID, 'type' );
+			$name            = $item->post_title;
+			$slug            = $item->post_name;
+			$url             = "http";
+			$menu_icon       = get_post_meta( $item->ID, 'menu_icon' );
+			$menu_position   = get_post_meta( $item->ID, 'menu_position' );
+			$capability_type = get_post_meta( $item->ID, 'capability_type' );
+			$archive_slug    = get_post_meta( $item->ID, 'capability_type_custom' );
 			if ( ! implode( $menu_icon ) ) {
 				$icon_type = 'dashicons';
 				$menu_icon = 'dashicons-admin-generic';
@@ -101,7 +103,8 @@ class PostTypes extends Base {
 					'icon_type'           => $icon_type,
 					'menu_icon'           => $menu_icon,
 					'icon_custom'         => $icon_custom,
-					'capability_type'     => 'post',
+					'capability_type'     => $capability_type ?: 'post',
+					'archive_slug'        => $archive_slug ?: '',
 					'supports'            => [ 'title', 'editor', 'thumbnail' ],
 					'taxonomies'          => [],
 					'rewrite'             => [ 
