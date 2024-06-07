@@ -12,7 +12,7 @@ class Taxonomies extends Base {
 			return [];
 		}
 
-		$query = new WP_Query( [
+		$query = new WP_Query( [ 
 			'post_type'              => '_pods_pod',
 			'post_status'            => 'any',
 			'posts_per_page'         => -1,
@@ -24,115 +24,89 @@ class Taxonomies extends Base {
 		return $query->posts;
 	}
 
-	private function get_build_term( $slug ) {
-		global $wpdb;
-		$sql = "SELECT post_id FROM $wpdb->postmeta WHERE meta_key=%s AND meta_value=%s";
-		return $wpdb->get_col( $wpdb->prepare( $sql, 'built_in_taxonomies_' . $slug, '1' ) );
-
-	}
-
-	private function get_name_post_type( $id ) {
-		global $wpdb;
-		$sql = "SELECT post_name FROM $wpdb->posts WHERE ID=%s";
-		return $wpdb->get_col( $wpdb->prepare( $sql, $id ) );
-
-	}
-
 	protected function migrate_item() {
-		$items = $this->get_items();
-		foreach ( $items as $item ) {
-			$type  = get_post_meta( $item->ID, 'type' );
-			$name  = $item->post_title;
-			$slug  = $item->post_name;
-			$build = $this->get_build_term( $slug );
-			$types = $this->get_name_post_type( $build );
-			if ( implode( $type ) === 'taxonomy' ) {
-				$labels  = [
-					'name'                     => esc_html__( $name, 'mb-pods-migration' ),
-					'singular_name'            => esc_html__( $name, 'mb-pods-migration' ),
-					'add_new'                  => esc_html__( 'Add new', 'mb-pods-migration' ),
-					'add_new_item'             => esc_html__( 'Add new' . $name, 'mb-pods-migration' ),
-					'edit_item'                => esc_html__( 'Edit ' . $name, 'mb-pods-migration' ),
-					'new_item'                 => esc_html__( 'New ' . $name, 'mb-pods-migration' ),
-					'view_item'                => esc_html__( 'View ' . $name, 'mb-pods-migration' ),
-					'view_items'               => esc_html__( 'View ' . $name, 'mb-pods-migration' ),
-					'search_items'             => esc_html__( 'Search ' . $name, 'mb-pods-migration' ),
-					'not_found'                => esc_html__( 'No ' . $name . ' found.', 'mb-pods-migration' ),
-					'not_found_in_trash'       => esc_html__( 'No ' . $name . ' found in Trash.', 'mb-pods-migration' ),
-					'parent_item_colon'        => esc_html__( 'Parent ' . $name . ':', 'mb-pods-migration' ),
-					'all_items'                => esc_html__( 'Toàn bộ ' . $name, 'mb-pods-migration' ),
-					'archives'                 => esc_html__( $name . ' Archives', 'mb-pods-migration' ),
-					'attributes'               => esc_html__( $name . ' Attributes', 'mb-pods-migration' ),
-					'insert_into_item'         => esc_html__( 'Insert into ' . $name, 'mb-pods-migration' ),
-					'uploaded_to_this_item'    => esc_html__( 'Uploaded to this ' . $name, 'mb-pods-migration' ),
-					'featured_image'           => esc_html__( 'Featured image', 'mb-pods-migration' ),
-					'set_featured_image'       => esc_html__( 'Set featured image', 'mb-pods-migration' ),
-					'remove_featured_image'    => esc_html__( 'Remove featured image', 'mb-pods-migration' ),
-					'use_featured_image'       => esc_html__( 'Use as featured image', 'mb-pods-migration' ),
-					'menu_name'                => esc_html__( $name, 'mb-pods-migration' ),
-					'filter_items_list'        => esc_html__( 'Filter ' . $name . ' list', 'mb-pods-migration' ),
-					'filter_by_date'           => esc_html__( '', 'mb-pods-migration' ),
-					'items_list_navigation'    => esc_html__( $name . ' list navigation', 'mb-pods-migration' ),
-					'items_list'               => esc_html__( $name . ' list', 'mb-pods-migration' ),
-					'item_published'           => esc_html__( $name . ' published.', 'mb-pods-migration' ),
-					'item_published_privately' => esc_html__( $name . ' published privately.', 'mb-pods-migration' ),
-					'item_reverted_to_draft'   => esc_html__( $name . ' reverted to draft.', 'mb-pods-migration' ),
-					'item_scheduled'           => esc_html__( $name . ' scheduled.', 'mb-pods-migration' ),
-					'item_updated'             => esc_html__( $name . ' updated.', 'mb-pods-migration' ),
-				];
-				$args    = [
-					'slug'                => $slug,
-					'types'               => $types,
-					'label'               => esc_html__( $name, 'mb-pods-migration' ),
-					'labels'              => $labels,
-					'description'         => '',
-					'public'              => true,
-					'hierarchical'        => true,
-					'exclude_from_search' => false,
-					'publicly_queryable'  => true,
-					'show_ui'             => true,
-					'show_in_nav_menus'   => true,
-					'show_in_admin_bar'   => true,
-					'show_in_rest'        => true,
-					'query_var'           => true,
-					'can_export'          => true,
-					'delete_with_user'    => true,
-					'has_archive'         => true,
-					'rest_base'           => '',
-					'show_in_menu'        => true,
-					'menu_position'       => '',
-					'menu_icon'           => 'dashicons-admin-generic',
-					'capability_type'     => 'post',
-					'supports'            => [ 'title', 'editor', 'thumbnail' ],
-					'taxonomies'          => [],
-					'rewrite'             => [
-						'with_front' => false,
-					],
-				];
-				$content = wp_json_encode( $args, JSON_UNESCAPED_UNICODE );
-				$content = str_replace( '"1"', 'true', $content );
-				$post_id = $this->get_id_by_slug( $slug, 'mb-taxonomy' );
-				if ( $post_id ) {
-					wp_update_post( [
-						'ID'           => $post_id,
-						'post_content' => $content,
-					] );
-				} else {
-					wp_insert_post( [
-						'post_content' => $content,
-						'post_type'    => 'mb-taxonomy',
-						'post_title'   => $name,
-						'post_status'  => 'publish',
-						'post_name'    => $slug,
-					] );
-				}
-			}
-		}
+		$this->migrate_taxonomies();
+	}
 
-		wp_send_json_success( [
-			'message' => __( 'Done', 'mb-pods-migration' ),
-			'type'    => 'done',
-		] );
+	protected function migrate_taxonomies() {
+		    $id              = $this->item->ID;
+			$type            = get_post_meta( $id, 'type', true );
+			if ( $type != 'taxonomy' ){
+				return;
+			}
+			$name            = $this->item->post_title;
+			$slug            = $this->item->post_name;
+			$singular        = get_post_meta( $id, 'label_singular', true ) ?: $slug;
+			$labels  = [
+				'name'                       => $name,
+				'singular_name'              => $singular, 
+				'menu_name'                  => get_post_meta( $id, 'label_menu_name', true ) ?: $name,
+				'search_items'               => get_post_meta( $id, 'label_search_items', true ) ?: 'Search ' . $name,
+				'popular_items'              => get_post_meta( $id, 'label_popular_items', true ) ?: 'Popular ' . $name,
+				'all_items'                  => get_post_meta( $id, 'label_all_items', true ) ?: 'All ' . $name,
+				'view_item'                  => get_post_meta( $id, 'label_view_item', true ) ?: 'View ' . $singular,
+				'parent_item'                => get_post_meta( $id, 'label_parent_item', true ) ?: 'Parent ' . $singular,
+				'parent_item_colon'          => get_post_meta( $id, 'label_parent_item_colon', true ) ?: 'Parent ' . $singular,
+				'edit_item'                  => get_post_meta( $id, 'label_edit_item', true ) ?: 'Edit ' . $singular,
+				'update_item'                => get_post_meta( $id, 'label_update_item', true ) ?: 'Update ' . $singular,
+				'add_new_item'               => get_post_meta( $id, 'label_add_new_item', true ) ?: 'Add new ' . $singular,
+				'new_item_name'              => get_post_meta( $id, 'label_new_item_name', true ) ?: 'New ' . $singular . ' name',
+				'filter_by_item'             => get_post_meta( $id, 'label_filter_by_item', true ) ?: 'Filter by ' . $singular,
+				'separate_items_with_commas' => get_post_meta( $id, 'label_separate_items_with_commas', true ) ?: 'Separate ' . $name . ' with commas',
+				'add_or_remove_items'        => get_post_meta( $id, 'label_add_or_remove_items', true ) ?: 'Add or remove ' . $name,
+				'choose_from_most_used'      => get_post_meta( $id, 'label_choose_from_most_used', true ) ?: 'Choose from the most used ' . $name,
+				'view_item'                  => get_post_meta( $id, 'label_view_item', true ) ?: 'View ' . $singular,
+				'filter_by_item'             => get_post_meta( $id, 'label_filter_by_item', true ) ?: 'Filter by ' . $singular,
+				'not_found'                  => get_post_meta( $id, 'label_not_found', true ) ?: 'Not ' . $name . ' found',
+				'no_terms'                   => get_post_meta( $id, 'label_no_terms', true ) ?: 'No ' . $name,
+				'items_list_navigation'      => get_post_meta( $id, 'label_items_list_navigation', true ) ?: $name . ' list navigation',
+				'items_list'                 => get_post_meta( $id, 'label_items_list', true ) ?: $name . ' list',
+				'back_to_items'              => get_post_meta( $id, 'label_back_to_items', true ) ?: 'Back to ' . $name,
+			];
+			$args    = [ 
+				'slug'                => $slug,
+				'label'               => $name,
+				'labels'              => $labels,
+				'description'         => $this->$item->post_content,
+				'public'              => get_post_meta( $id, 'public', true ) ?: false,
+				'hierarchical'        => get_post_meta( $id, 'hierarchical', true ) ?: false,
+				'publicly_queryable'  => get_post_meta( $id, 'publicly_queryable', true ) ?: false,
+				'show_ui'             => get_post_meta( $id, 'show_ui', true ) ?: false,
+				'show_in_nav_menus'   => get_post_meta( $id, 'show_in_nav_menus', true ) ?: false,
+				'show_tagcloud'       => get_post_meta( $id, 'show_tagcloud', true ) ?: false,
+				'show_in_rest'        => get_post_meta( $id, 'rest_enable', true ) ?: false,
+				'query_var'           => get_post_meta( $id, 'query_var', true ) ?: false,
+				'show_in_quick_edit'  => get_post_meta( $id, 'show_in_quick_edit', true ) ?: false,
+				'show_admin_column'   => get_post_meta( $id, 'show_admin_column', true ) ?: false,
+				'rest_base'           => get_post_meta( $id, 'rest_base', true ) ?: '',
+				'meta_box_cb'         => get_post_meta( $id, 'hierarchical', true ) ? 'post_categories_meta_box' : 'post_tags_meta_box',
+				'show_in_menu'        => ( get_post_meta( $id, 'show_in_menu', true ) == '0' ) ? false : true,
+				'types'               => $this->get_col_values( $id, 'built_in_post_types_') ?: [],
+				'rewrite'             => [ 
+					'with_front'   => get_post_meta( $id, 'rewrite_with_front', true ) ?: false,
+					'slug'         => get_post_meta( $id, 'rewrite_custom_slug', true ) ?: '',
+					'hierarchical' => get_post_meta( $id, 'rewrite_hierarchical', true ) ?: false,
+				],
+			];
+			$content = wp_json_encode( $args, JSON_UNESCAPED_UNICODE );
+			$content = str_replace( '"1"', 'true', $content );
+			$post_id = $this->get_id_by_slug( $slug, 'mb-taxonomy' );
+			if ( $post_id ) {
+				wp_update_post( [ 
+					'ID'           => $post_id,
+					'post_content' => $content,
+				] );
+			} else {
+				wp_insert_post( [ 
+					'post_content' => $content,
+					'post_type'    => 'mb-taxonomy',
+					'post_title'   => $name,
+					'post_status'  => 'publish',
+					'post_name'    => $slug,
+				], true );
+			}
+
+			//wp_delete_post( $this->item->ID, true ) ;
 	}
 
 }

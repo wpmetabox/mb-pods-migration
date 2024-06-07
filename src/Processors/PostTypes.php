@@ -26,7 +26,6 @@ class PostTypes extends Base {
 
 	protected function migrate_item() {
 		$this->migrate_post_types();
-		$this->disable_post();
 	}
 
 	protected function migrate_post_types() {
@@ -125,9 +124,7 @@ class PostTypes extends Base {
 					'post_name'    => $slug,
 				], true );
 			}
-	}
 
-	protected function disable_post() {
-		wp_delete_post( $this->item->ID, true ) ;
+			wp_delete_post( $this->item->ID, true ) ;
 	}
 }

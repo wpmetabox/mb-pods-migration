@@ -14,9 +14,9 @@
 		printMessage( i18n.migratingPostTypes );
 		await migrate( 'post_types' );
 
-		// await resetCounter();
-		// printMessage( i18n.migratingTaxonomies );
-		// await migrate( 'taxonomies' );
+		await resetCounter();
+		printMessage( i18n.migratingTaxonomies );
+		await migrate( 'taxonomies' );
 
 		// await resetCounter();
 		// printMessage( i18n.migratingTerms );
