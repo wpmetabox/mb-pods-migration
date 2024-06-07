@@ -1,22 +1,22 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => '5db15e0513ecd9ca02cf742aa96f4f6e9f1eda8f',
         'name' => 'meta-box/mb-pods-migration',
         'dev' => true,
     ),
     'versions' => array(
         'meta-box/mb-pods-migration' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => '5db15e0513ecd9ca02cf742aa96f4f6e9f1eda8f',
             'dev_requirement' => false,
         ),
         'meta-box/mbb-parser' => array(
@@ -27,7 +27,7 @@
             'aliases' => array(
                 0 => '9999999-dev',
             ),
-            'reference' => '8355db0b86c0de552a7e5b33c897c2835fa92bd6',
+            'reference' => 'aa9704c376d8fc9b437cb2c87dd47e1d1a93e854',
             'dev_requirement' => false,
         ),
         'meta-box/support' => array(

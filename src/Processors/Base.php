@@ -71,4 +71,23 @@ abstract class Base {
 
 		return $id;
 	}
+
+	public function get_col_values( $post_id, $search ) {
+		global $wpdb;
+		$sql  = "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s";
+		$s    = '%' . $wpdb->esc_like( $search ) . '%';
+		$cols = $wpdb->get_col( $wpdb->prepare( $sql, $post_id, $s ) );
+		$checks  = [];
+		foreach ( $cols as $col ) {
+			if ( get_post_meta( $post_id, $col, true ) ) {
+				$checks[] = $col;
+			}
+		}
+
+		$values = [];
+		foreach ( $checks as $check ){
+			$values[] = str_replace( $search,'', $check );
+		}
+		return $values;
+	}
 }
