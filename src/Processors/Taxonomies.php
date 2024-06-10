@@ -106,7 +106,7 @@ class Taxonomies extends Base {
 				], true );
 			}
 
-			//wp_delete_post( $this->item->ID, true ) ;
+			wp_delete_post( $this->item->ID, true ) ;
 	}
 
 }

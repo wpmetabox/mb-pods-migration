@@ -23,16 +23,17 @@ class AdminPage {
 		wp_enqueue_style( 'mb-pods', plugins_url( 'assets/migrate.css', __DIR__ ), [], '1.0.0' );
 		wp_enqueue_script( 'mb-pods', plugins_url( 'assets/migrate.js', __DIR__ ), [], '1.0.0', true );
 		wp_localize_script( 'mb-pods', 'MbPods', [
-			'notice'                => __( 'The plugin will delete the Pods data. Always backup your database first before migrating. Will you continue to migrate?', 'mb-pods-migration' ),
-			'start'                 => __( 'Start', 'mb-pods-migration' ),
-			'done'                  => __( 'Done', 'mb-pods-migration' ),
-			'migratingPostTypes'    => __( 'Migrating post types', 'mb-pods-migration' ),
-			'migratingTaxonomies'   => __( 'Migrating taxonomies', 'mb-pods-migration' ),
-			'migratingFieldGroups'  => __( 'Migrating field groups', 'mb-pods-migration' ),
-			'migratingPosts'        => __( 'Migrating posts', 'mb-pods-migration' ),
-			'migratingTerms'        => __( 'Migrating terms', 'mb-pods-migration' ),
-			'migratingUsers'        => __( 'Migrating users', 'mb-pods-migration' ),
-			'migratingRelationship' => __( 'Migrating relationship', 'mb-pods-migration' ),
+			'notice'                 => __( 'The plugin will delete the Pods data. Always backup your database first before migrating. Will you continue to migrate?', 'mb-pods-migration' ),
+			'start'                  => __( 'Start', 'mb-pods-migration' ),
+			'done'                   => __( 'Done', 'mb-pods-migration' ),
+			'migratingPostTypes'     => __( 'Migrating post types', 'mb-pods-migration' ),
+			'migratingTaxonomies'    => __( 'Migrating taxonomies', 'mb-pods-migration' ),
+			'migratingFieldGroups'   => __( 'Migrating field groups', 'mb-pods-migration' ),
+			'migratingPosts'         => __( 'Migrating posts', 'mb-pods-migration' ),
+			'migratingTerms'         => __( 'Migrating terms', 'mb-pods-migration' ),
+			'migratingUsers'         => __( 'Migrating users', 'mb-pods-migration' ),
+			'migratingRelationship'  => __( 'Migrating relationship', 'mb-pods-migration' ),
+			'migratingSettingsPages' => __( 'Migrating settings pages ', 'mb-pods-migration' ),
 		] );
 	}
 
