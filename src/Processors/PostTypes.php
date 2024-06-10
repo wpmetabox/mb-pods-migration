@@ -31,11 +31,11 @@ class PostTypes extends Base {
 	protected function migrate_post_types() {
 		    $id              = $this->item->ID;
 			$type            = get_post_meta( $id, 'type', true );
-			if ( $type != 'post_type' ){
+			$slug            = $this->item->post_name;
+			if ( $type != 'post_type' || in_array( $slug, [ 'post', 'page'] ) ){
 				return;
 			}
 			$name            = $this->item->post_title;
-			$slug            = $this->item->post_name;
 			$singular        = get_post_meta( $id, 'label_singular', true ) ?: $slug;
 			$menu_icon       = get_post_meta( $id, 'menu_icon', true ) ?: 'dashicons-admin-post';
 			if ( strpos( $menu_icon, "http" ) !== false ) {

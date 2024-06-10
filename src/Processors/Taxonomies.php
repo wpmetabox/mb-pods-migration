@@ -31,11 +31,11 @@ class Taxonomies extends Base {
 	protected function migrate_taxonomies() {
 		    $id              = $this->item->ID;
 			$type            = get_post_meta( $id, 'type', true );
-			if ( $type != 'taxonomy' ){
+			$slug            = $this->item->post_name;
+			if ( $type != 'taxonomy' || $slug == 'category' ){
 				return;
 			}
 			$name            = $this->item->post_title;
-			$slug            = $this->item->post_name;
 			$singular        = get_post_meta( $id, 'label_singular', true ) ?: $slug;
 			$labels  = [
 				'name'                       => $name,
