@@ -11,35 +11,30 @@ class ConditionalLogic {
 	}
 
 	public function migrate() {
-        $groups = Arr::get( $this->settings, 'data.conditional_display' );
+        $groups = Arr::get( $this->settings, 'conditional_logic' );
 		if ( ! $groups )  {
 			return;
 		}
 
+		$type = ( Arr::get( $groups, 'action' ) == 'show' ) ? 'visible' : 'hidden';
+		$logic = ( Arr::get( $groups, 'action' ) == 'all' ) ? 'and' : 'or';
+
 		$conditional_logic = [
-			'type'     => 'visible',
-			'relation' => Arr::get( $groups, 'relation', 'and' ),
+			'type'     => $type,
+			'relation' => $logic,
 			'when'     => [],
 		];
 
-		$rules = Arr::get( $groups, 'conditions' );
+		$rules = Arr::get( $groups, 'rules' );
 
 		foreach ( $rules as $rule ) {
 			$id = uniqid();
-			if ( $rule['operation'] === '===' ) {
-				$operator = 'match';
-			} elseif ( $rule['operation'] === '!==' ) {
-				$operator = 'not match';
-			} else {
-				$operator = $rule['operation'];
-			}
-
 			$rule[ 'id' ]       = $id;
 			$rule[ 'name' ]     = $rule['field'];
-			$rule[ 'operator' ] = $operator;
+			$rule[ 'operator' ] = $rule['compare'];
 
 		    unset( $rule['field'] );
-			unset( $rule['operation'] );
+			unset( $rule['compare'] );
 
 			$conditional_logic['when'][ $id ] = $rule;
 		}

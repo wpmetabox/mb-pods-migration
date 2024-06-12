@@ -44,6 +44,7 @@ class Fields {
 			return;
 		}
 		$id = $this->field->ID;
+		$enable_logic = get_post_meta( $id, 'enable_conditional_logic', true );
 		$settings = [
 			'name' =>  $this->field->post_title,
 			'id' => $this->field->post_name,
@@ -56,7 +57,8 @@ class Fields {
 			'clone' => get_post_meta( $id, 'repeatable', true ) ? true : false,
 			'add_button' => get_post_meta( $id, 'repeatable_add_new_label', true ),
 			'class' => get_post_meta( $id, 'class', true ) ?: '',
-			'sanitize_callback' => get_post_meta( $id, 'text_sanitize_html', true ) ? true : 'none',
+			'sanitize_callback' => ( get_post_meta( $id, 'text_sanitize_html', true ) == 0 ) ? 'none' : '',
+			'conditional_logic' => $enable_logic ? get_post_meta( $id, 'conditional_logic', true ) : [],
 		];
 
 		$ignore_types = [ 'pick' ];
@@ -74,8 +76,8 @@ class Fields {
 			];
 		}
 
-		//$conditional_logic = new ConditionalLogic( $settings );
-		//$conditional_logic->migrate();
+		$conditional_logic = new ConditionalLogic( $settings );
+		$conditional_logic->migrate();
 
 		$this->fields[ $settings['_id'] ] = $settings;
 	}
