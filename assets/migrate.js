@@ -26,9 +26,9 @@
 		// printMessage( i18n.migratingUsers );
 		// await migrate( 'users' );
 
-		// await resetCounter();
-		// printMessage( i18n.migratingFieldGroups );
-		// await migrate( 'field_groups' );
+		await resetCounter();
+		printMessage( i18n.migratingFieldGroups );
+		await migrate( 'field_groups' );
 
 		// await resetCounter();
 		// printMessage( i18n.migratingRelationship );

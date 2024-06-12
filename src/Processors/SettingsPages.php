@@ -70,6 +70,7 @@ class SettingsPages extends Base {
 			case 'top':
 				$parent = '';
 				$menu_type = 'top';
+				break;
 			default:
 				$parent = 'options-general.php';
 				break;

@@ -36,27 +36,22 @@ class FieldType {
 			$this->$method();
 		}
 
-		if ( $this->post_id ) {
-			$this->migrate_group();
-		}
-
 		return $this->settings;
 	}
 
 	private function migrate_general_settings() {
-		Arr::change_key( $this->settings, 'description', 'label_description' );
-		$this->std         = Arr::get( $this->settings, 'data.user_default_value' );
-		$this->placeholder = Arr::get( $this->settings, 'data.placeholder' );
-
-		if ( Arr::get( $this->settings, 'data.repetitive' ) ) {
+		if ( Arr::get( $this->settings, 'clone' ) ) {
 			$this->clone         = true;
 			$this->sort_clone    = true;
 			$this->clone_default = true;
+			$this->clone_as_multiple = true;
+			$this->add_button = Arr::get( $this->settings, 'add_button' );
 		} else {
 			unset( $this->clone );
+			unset( $this->add_button );
 		}
 
-		if ( Arr::get( $this->settings, 'data.validate.required' ) ) {
+		if ( Arr::get( $this->settings, 'required' ) ) {
 			$this->required = true;
 		} else {
 			unset( $this->required );
@@ -65,114 +60,71 @@ class FieldType {
 		$this->_id        = $this->type . '_' . uniqid();
 		$this->_state     = 'collapse';
 		$this->save_field = true;
-		// unset( $this->data );
-		unset( $this->meta_key );
-		unset( $this->meta_type );
 
 	}
 
-	private function migrate_group() {
-		$this->type          = 'group';
-		$this->id            = get_post_meta( $this->post_id, '_types_repeatable_field_group_post_type', true );
-		$this->_id           = $this->type . '_' . uniqid();
-		$this->name          = get_the_title( $this->post_id );
-		$this->clone         = true;
-		$this->sort_clone    = true;
-		$this->clone_default = true;
-		$fields              = new Fields( $this->post_id );
-		$this->fields        = $fields->migrate_fields();
+	private function migrate_website() {
+		$this->type = 'url';
 	}
 
 	private function migrate_phone() {
 		$this->type = 'text';
 	}
 
-	private function migrate_textfield() {
+	private function migrate_paragraph() {
+		$this->type = 'textarea';
+	}
+
+	private function migrate_code() {
+		$this->type = 'textarea';
+	}
+
+	private function migrate_currency() {
 		$this->type = 'text';
 	}
 
-	private function migrate_embed() {
-		$this->type = 'oembed';
+	private function migrate_file() {
+		$file_uploader = get_post_meta( $post_id, 'file_uploader', true );
+		$this->max_file_uploads = get_post_meta( $post_id, 'file_format_type', true ) == 'single' ? 1 : '';
+		$this->type =  ( $file_uploader == 'attachment' ) ? 'file_advanced' : 'file_upload';
+		$file_type = get_post_meta( $post_id, 'file_uploader', true );
+		$image = [ 'images', 'images-any'];
+		$video = [ 'video', 'video-any' ];
+		if ( in_array( $file_type, $image) ){
+			$this->type = ( $file_uploader == 'attachment' ) ? 'image_advanced' : 'image_upload';
+		}
+		if ( in_array( $file_type, $video ) ){
+			$this->type = 'video';
+		}
 	}
 
-	private function migrate_image() {
-		$this->type = 'single_image';
-	}
-
-	private function migrate_audio() {
-		$this->type = 'file_input';
-	}
-
-	private function migrate_numeric() {
-		$this->type = 'number';
-	}
-
-	private function migrate_select() {
-		$this->migrate_choices();
-	}
-
-	private function migrate_radio() {
-		$this->migrate_choices();
-	}
-
-	private function migrate_checkbox() {
-		$this->std = Arr::get( $this->settings, 'data.checked' );
-	}
-
-	private function migrate_checkboxes() {
-		$this->type = 'checkbox_list';
-		$values     = [];
-		$default    = [];
-		$options    = Arr::get( $this->settings, 'data.options' );
-
-		foreach ( $options as $option ) {
-			$title   = Arr::get( $option, 'title' );
-			$value   = Arr::get( $option, 'set_value' );
-			$checked = Arr::get( $option, 'checked' );
-			if ( $title && $value ) {
-				$values[] = "$value: $title";
-			}
-			if ( $checked ) {
-				$default[] = $value;
-			}
+	private function migrate_boolean() {
+		$type = get_post_meta( $post_id, 'boolean_format_type', true ) ?: 'radio';
+		$this->type = $type;
+		if( $type == 'checkbox' ){
+			$this->type = 'checkbox_list';
+		}
+		if ( $type == 'dropdown'){
+			$this->type = 'select';
+		}
+		$options = [ 
+			'1' => get_post_meta( $post_id, 'boolean_yes_label', true) ?: 'Yes',
+			'0' => get_post_meta( $post_id, 'boolean_no_label', true) ?: 'No',
+		];
+		$values = [];
+		foreach( $options as $key => $value ){
+			$values[] = "$key: $value";
 		}
 		$this->options = implode( "\n", $values );
-		$this->std     = implode( "\n", $default );
+		
 	}
 
-	private function migrate_choices() {
-		$values        = [];
-		$options       = Arr::get( $this->settings, 'data.options' );
-		$default       = Arr::get( $options, 'default' );
-		$default_value = '';
-
-		foreach ( $options as $key => $option ) {
-			$title = Arr::get( $option, 'title' );
-			$value = Arr::get( $option, 'value' );
-			if ( $title && $value ) {
-				$values[] = "$value: $title";
-			}
-			if ( $key == $default ) {
-				$default_value = Arr::get( $option, 'value' );
-			}
-		}
-		$this->options = implode( "\n", $values );
-		$this->std     = $default_value;
+	private function migrate_html() {
+		$this->type = 'custom_html';
+		$this->std  = get_post_meta( $post_id, 'html_content', true );
 	}
-
-	private function migrate_date() {
-		$date_and_time   = Arr::get( $this->settings, 'data.date_and_time' );
-		$this->type      = $date_and_time === 'date' ? 'date' : 'datetime';
-		$this->timestamp = true;
-	}
-
-	private function migrate_colorpicker() {
-		$this->type = 'color';
-	}
-
-	private function migrate_post() {
-		$this->type       = 'post';
-		$this->post_type  = [ Arr::get( $this->settings, 'data.post_reference_type' ) ];
-		$this->field_type = 'select_advanced';
+	
+	private function migrate_heading() {
+		$this->desc = get_post_meta( $post_id, 'html_tag', true );
 	}
 }
