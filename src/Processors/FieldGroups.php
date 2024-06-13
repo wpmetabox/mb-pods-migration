@@ -100,11 +100,11 @@ class FieldGroups extends Base {
 			break;
 			case 'taxonomy':
 			$type = 'term';
-			$this->settings['taxonomies'] = get_post( $post_parent )->post_name;
+			$this->settings['taxonomies'] = [ get_post( $post_parent )->post_name ];
 			break;
 			case 'settings':
 			$type = 'setting';
-			$this->settings['settings_pages'] = get_post( $post_parent )->post_name;
+			$this->settings['settings_pages'] = [ get_post( $post_parent )->post_name ];
 			break;
 			default:
 			$type = $object_type;

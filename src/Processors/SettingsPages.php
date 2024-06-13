@@ -75,7 +75,7 @@ class SettingsPages extends Base {
 				$parent = 'options-general.php';
 				break;
 		}
-		$menu_icon       = get_post_meta( $settings->ID, 'menu_icon', true ) ?: 'dashicons-admin-post';
+		$menu_icon       = get_post_meta( $settings->ID, 'menu_icon', true ) ?: 'dashicons-admin-generic';
 		if ( strpos( $menu_icon, "http" ) !== false ) {
 			$icon_type   = 'custom';
 		}
@@ -99,6 +99,6 @@ class SettingsPages extends Base {
 		$parser->parse();
 		update_post_meta( $this->post_id, 'settings_page', $parser->get_settings() );
 
-		wp_delete_post( $settings->ID, true ) ;
+		//wp_delete_post( $settings->ID, true ) ;
 	}
 }
