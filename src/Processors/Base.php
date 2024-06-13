@@ -35,6 +35,21 @@ abstract class Base {
 	abstract protected function get_items();
 	abstract protected function migrate_item();
 
+	protected function get_field_group_ids() {
+		if ( null !== $this->field_group_ids ) {
+			return $this->field_group_ids;
+		}
+
+		$this->field_group_ids = array_unique( Arr::get( $_SESSION, "field_groups.{$this->object_type}", [] ) );
+
+		return $this->field_group_ids;
+	}
+
+	protected function delete_post( $post_id ){
+		global $wpdb;
+		$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID = %d", $post_id ) );
+	}
+
 	public function get_id_by_slug( $slug, $post_type ) {
 		global $wpdb;
 		if ( ! $slug ) {

@@ -125,6 +125,6 @@ class PostTypes extends Base {
 				], true );
 			}
 
-			wp_delete_post( $this->item->ID, true ) ;
+			$this->delete_post( $this->item->ID ) ;
 	}
 }

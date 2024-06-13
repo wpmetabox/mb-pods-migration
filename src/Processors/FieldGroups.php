@@ -73,10 +73,7 @@ class FieldGroups extends Base {
 		}
 
 		update_post_meta( $this->item->ID, 'meta_box_id', $this->post_id );
-	}
-
-	private function delete_post() {
-		wp_delete_post( $this->item->ID );
+		$this->delete_post( $this->item->ID );
 	}
 
 	private function migrate_settings() {
