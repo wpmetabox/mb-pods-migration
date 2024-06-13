@@ -13,11 +13,6 @@ class SettingsPages extends Base {
 
 	protected function get_items() {
 
-		$field_group_ids = $this->get_field_group_ids();
-		if ( empty( $field_group_ids ) ) {
-			return [];
-		}
-
 		// Process all settings pages at once.
 		if ( $_SESSION[ 'processed' ] ) {
 			return [];
@@ -103,22 +98,17 @@ class SettingsPages extends Base {
 		update_post_meta( $this->post_id, 'settings', $parser->get_settings() );
 		$parser->parse();
 		update_post_meta( $this->post_id, 'settings_page', $parser->get_settings() );
-		$this->migrate_value();
+		$this->migrate_value( $settings->ID );
 
 		$this->delete_post( $settings->ID ) ;
 	}
 
-	private function get_fields() {
-		$groups = (array)$this->get_field_group_ids();
-		$groups_id = [];
-		foreach ( $groups as $id ){
-			$groups_id[] = get_post( $id )->post_parent;
-		}
+	private function migrate_value( $id ) {
 		$query = new WP_Query( [
 			'post_type'              => '_pods_field',
 			'post_status'            => 'any',
 			'posts_per_page'         => -1,
-			'post_parent__in'        => $groups_id,
+			'post_parent'            => $id,
 			'order'                  => 'ASC',
 			'orderby'                => 'menu_order',
 			'no_found_rows'          => true,
@@ -126,11 +116,7 @@ class SettingsPages extends Base {
 			'update_post_term_cache' => false,
 		] );
 
-		return $query->posts;
-	}
-
-	private function migrate_value() {
-		$fields = $this->get_fields();
+		$fields = $query->posts;
 		$args   = [];
 		foreach ( $fields as $field ) {
 			$slug        = $field->post_name;

@@ -7,7 +7,6 @@ abstract class Base {
 	protected $threshold = 10;
 	public $item;
 	protected $object_type;
-	protected $field_group_ids = null;
 
 	public function migrate() {
 		$items = $this->get_items();
@@ -34,16 +33,6 @@ abstract class Base {
 
 	abstract protected function get_items();
 	abstract protected function migrate_item();
-
-	protected function get_field_group_ids() {
-		if ( null !== $this->field_group_ids ) {
-			return $this->field_group_ids;
-		}
-
-		$this->field_group_ids = array_unique( Arr::get( $_SESSION, "field_groups.{$this->object_type}", [] ) );
-
-		return $this->field_group_ids;
-	}
 
 	protected function delete_post( $post_id ){
 		global $wpdb;
