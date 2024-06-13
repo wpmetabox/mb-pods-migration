@@ -32,12 +32,9 @@ class Ajax {
 		if ( ! in_array( $type, [
 			'post_types',
 			'taxonomies',
-			'field_groups',
-			'posts',
-			'terms',
-			'users',
-			'relationship',
 			'settings_pages',
+			'field_groups',
+			'relationship',
 		], true ) ) {
 			return;
 		}

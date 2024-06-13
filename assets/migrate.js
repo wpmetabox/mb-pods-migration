@@ -18,13 +18,9 @@
 		printMessage( i18n.migratingTaxonomies );
 		await migrate( 'taxonomies' );
 
-		// await resetCounter();
-		// printMessage( i18n.migratingTerms );
-		// await migrate( 'terms' );
-
-		// await resetCounter();
-		// printMessage( i18n.migratingUsers );
-		// await migrate( 'users' );
+		await resetCounter();
+		printMessage( i18n.migratingSettingsPages );
+		await migrate( 'settings_pages' );
 
 		await resetCounter();
 		printMessage( i18n.migratingFieldGroups );
@@ -33,10 +29,6 @@
 		// await resetCounter();
 		// printMessage( i18n.migratingRelationship );
 		// await migrate( 'relationship' );
-
-		await resetCounter();
-		printMessage( i18n.migratingSettingsPages );
-		await migrate( 'settings_pages' );
 
 		printMessage( i18n.done );
 	} );
