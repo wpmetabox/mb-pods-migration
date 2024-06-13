@@ -104,6 +104,7 @@ class FieldGroups extends Base {
 			break;
 			case 'settings':
 			$type = 'setting';
+			$this->settings['settings_pages'] = get_post( $post_parent )->post_name;
 			break;
 			default:
 			$type = $object_type;
