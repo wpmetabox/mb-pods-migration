@@ -1,16 +1,34 @@
 <?php
 namespace MetaBox\Pods\Processors;
+use WP_Query;
 
 class Relationship extends Base {
 	protected function get_items() {
-		global $wpdb;
-		$sql = "SELECT id FROM `{$wpdb->prefix}podsrel`";
-		return $wpdb->get_col( $sql );
+
+		$query = new WP_Query( [
+			'post_type'              => '_pods_field',
+			'post_status'            => 'any',
+			'posts_per_page'         => -1,
+			'order'                  => 'ASC',
+			'orderby'                => 'menu_order',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		] );
+
+		return $query->posts;
 	}
 
 	protected function migrate_item() {
+
 		$items = $this->get_items();
-		foreach ( $items as $id ) {
+		foreach ( $items as $item ) {
+			$this->migrate_relationship( $item->ID );
+		}
+
+		global $wpdb;
+		$ids = $wpdb->get_col( "SELECT id FROM `{$wpdb->prefix}podsrel`" );
+		foreach ( $ids as $id ) {
 			$this->migrate_values( $id );
 		}
 
@@ -20,21 +38,99 @@ class Relationship extends Base {
 		] );
 	}
 
+	private function migrate_relationship( $id ){
+		$type            = get_post_meta( $id, 'type', true );
+		$check           = get_post_meta( $id, 'pick_object', true ) ?: '';
+		if ( $type != 'pick' || $check == 'custom-simple' ){
+			return;
+		}
+		$post_id = $this->create_post( $id );
+		$this->migrate_settings( $id, $post_id );
+	}
+
+	private function create_post($id) {
+		$slug   = get_post($id)->post_name;
+		$data   = [
+			'post_title'  => get_post($id)->post_title,
+			'post_type'   => 'mb-relationship',
+			'post_status' => get_post($id)->post_status,
+			'post_name'   => $slug,
+		];
+
+		$post_id = $this->get_col_single_value( 'posts', 'ID', 'post_name', $slug );
+		if ( $post_id ) {
+			$data['ID'] = $post_id;
+			wp_update_post( $data );
+		} else {
+			$post_id = wp_insert_post( $data );
+		}
+		return $post_id;
+	}
+
+
+	private function migrate_settings( $id, $post_id ) {
+		$id_parent    = get_post($id)->post_parent;
+		$title        = get_post($id)->post_title;
+		$slug         = get_post($id)->post_name;
+		$object_type  = get_post_meta( $id, 'pick_object', true );
+		$from_type    = get_post( $id_parent )->post_name;
+		$to_type      = get_post_meta( $id, 'pick_val', true);
+		switch ( $object_type ) {
+			case 'post_type':
+			$type = 'post';
+			break;
+			case 'taxonomy':
+			$type = 'term';
+			break;
+			default:
+			$type = $object_type;
+			break;
+		}
+		$settings = [
+			'id'         => $slug,
+			'reciprocal' => true,
+			'menu_title' => $title,
+			'from'       => [
+				'object_type' => $type,
+				'field'       => [
+					'name' => $title,
+				],
+			],
+			'to'         => [
+				'object_type' => $type,
+				'field'       => [
+					'name' => $title,
+				],
+			],
+		];
+		if ( $type == 'post' ){
+			$settings['form']['post_type'] = $from_type;
+			$settings['to']['post_type'] = $to_type;
+		}
+
+		if ( $type == 'term' ){
+			$settings['form']['taxonomy'] = $from_type;
+			$settings['to']['taxonomy'] = $to_type;
+		}
+		update_post_meta( $post_id, 'relationship', $settings );
+		update_post_meta( $post_id, 'settings', $settings );
+	}
+
+
 	private function migrate_values( $id ) {
 		list( $item_id, $related_item_id, $slug, $weight ) = $this->get_data( $id );
 		global $wpdb;
 		$sql    = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
 		$from   = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
 		$weight += 1;
-		$object = (object) [ 
+		$check = [ 
 			'from' => $item_id,
 			'to'   => $related_item_id,
 		];
-		if ( self::objectInArray( $object, $from ) ) {
-			return;
-		} else {
+		if ( self::check_insert_data( $from, $check ) ) {
 			$wpdb->query( $wpdb->prepare( $sql, (int) $item_id, (int) $related_item_id, $slug, (int) $weight ) );
 		}
+			
 	}
 
 	private function get_data( $id ) {
@@ -42,8 +138,7 @@ class Relationship extends Base {
 		$item_id         = $this->get_col_single_value( 'podsrel', 'item_id', 'id', $id );
 		$related_item_id = $this->get_col_single_value( 'podsrel', 'related_item_id', 'id', $id );
 		$field_id        = $this->get_col_single_value( 'podsrel', 'field_id', 'id', $id );
-		$queried_post    = get_post( $field_id );
-		$type            = $queried_post->post_name;
+		$type            = get_post( $field_id )->post_name;
 		$weight          = $this->get_col_single_value( 'podsrel', 'weight', 'id', $id );
 
 		return [ $item_id, $related_item_id, $type, $weight ];
@@ -55,17 +150,12 @@ class Relationship extends Base {
 		return $wpdb->get_var( $wpdb->prepare( $sql, $conditional_value ) );
 	}
 
-	private function get_col_values( $table, $col, $conditional_col, $conditional_value ) {
-		global $wpdb;
-		$sql = "SELECT `{$col}`  FROM `{$wpdb->prefix}{$table}` WHERE `{$conditional_col}`=%s";
-		return $wpdb->get_col( $wpdb->prepare( $sql, $conditional_value ) );
-	}
-	private function objectInArray( $object, $array ) {
+	private function check_insert_data( $array, $form_to ) {
 		foreach ( $array as $item ) {
-			if ( $item->from === $object->from && $item->to === $object->to ) {
-				return true;
+			if ( $item->from === $form_to['from'] && $item->to === $from_to['to']) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 }

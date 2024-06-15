@@ -47,8 +47,6 @@ class FieldGroups extends Base {
 		$parser = new MetaBox( $data );
 		$parser->parse();
 		update_post_meta( $this->post_id, 'meta_box', $parser->get_settings() );
-
-		//$this->delete_post();
 	}
 
 	private function create_post() {
@@ -73,7 +71,7 @@ class FieldGroups extends Base {
 		}
 
 		update_post_meta( $this->item->ID, 'meta_box_id', $this->post_id );
-		$this->delete_post( $this->item->ID );
+		//$this->delete_post( $this->item->ID );
 	}
 
 	private function migrate_settings() {

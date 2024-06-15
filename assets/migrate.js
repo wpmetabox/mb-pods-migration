@@ -11,6 +11,10 @@
 		printMessage( i18n.start );
 
 		await resetCounter();
+		printMessage( i18n.migratingRelationship );
+		await migrate( 'relationship' );
+
+		await resetCounter();
 		printMessage( i18n.migratingFieldGroups );
 		await migrate( 'field_groups' );
 
@@ -25,10 +29,6 @@
 		await resetCounter();
 		printMessage( i18n.migratingSettingsPages );
 		await migrate( 'settings_pages' );
-
-		// await resetCounter();
-		// printMessage( i18n.migratingRelationship );
-		// await migrate( 'relationship' );
 
 		printMessage( i18n.done );
 	} );

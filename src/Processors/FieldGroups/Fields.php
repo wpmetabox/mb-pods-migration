@@ -61,8 +61,9 @@ class Fields {
 			'conditional_logic' => $enable_logic ? get_post_meta( $id, 'conditional_logic', true ) : [],
 		];
 
-		$ignore_types = [ 'pick' ];
-		if ( in_array( $settings['type'], $ignore_types ) ) {
+		$type   = get_post_meta( $id, 'type', true );
+		$check  = get_post_meta( $id, 'pick_object', true ) ?: '';
+		if ( $type == 'pick' && $check != 'custom-simple' ){
 			return;
 		}
 
