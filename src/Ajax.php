@@ -11,7 +11,7 @@ class Ajax {
 		if ( session_status() !== PHP_SESSION_ACTIVE ) {
 			session_start();
 		}
-		$_SESSION[ 'processed' ] = 0;
+		$_SESSION['processed'] = 0;
 
 		wp_send_json_success( [
 			'message' => '',

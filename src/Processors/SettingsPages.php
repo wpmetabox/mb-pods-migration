@@ -7,18 +7,18 @@ use MBBParser\Parsers\MetaBox;
 
 class SettingsPages extends Base {
 	private $post_id;
-	private $settings = [];
-	private $fields = [];
+	private $settings      = [];
+	private $fields        = [];
 	protected $object_type = 'setting';
 
 	protected function get_items() {
 
 		// Process all settings pages at once.
-		if ( $_SESSION[ 'processed' ] ) {
+		if ( $_SESSION['processed'] ) {
 			return [];
 		}
 
-		$query = new WP_Query( [ 
+		$query = new WP_Query( [
 			'post_type'              => '_pods_pod',
 			'post_status'            => 'publish',
 			'posts_per_page'         => -1,
@@ -40,11 +40,11 @@ class SettingsPages extends Base {
 		}
 		$settings = $this->item;
 		$type     = get_post_meta( $settings->ID, 'type', true );
-		if ( $type != 'settings' ){
+		if ( $type != 'settings' ) {
 			return;
 		}
 
-		$data    = [ 
+		$data    = [
 			'post_title'  => $settings->post_title,
 			'post_type'   => 'mb-settings-page',
 			'post_status' => 'publish',
@@ -52,7 +52,7 @@ class SettingsPages extends Base {
 		];
 		$post_id = $this->get_id_by_slug( $settings->post_name, 'mb-settings-page' );
 		if ( $post_id ) {
-			$this->post_id = $data[ 'ID' ] = $post_id;
+			$this->post_id = $data['ID'] = $post_id;
 			wp_update_post( $data );
 		} else {
 			$this->post_id = wp_insert_post( $data );
@@ -68,18 +68,18 @@ class SettingsPages extends Base {
 				$parent = get_post_meta( $settings->ID, 'menu_location_custom', true );
 				break;
 			case 'top':
-				$parent = '';
+				$parent    = '';
 				$menu_type = 'top';
 				break;
 			default:
 				$parent = 'options-general.php';
 				break;
 		}
-		$menu_icon       = get_post_meta( $settings->ID, 'menu_icon', true ) ?: 'dashicons-admin-generic';
-		if ( strpos( $menu_icon, "http" ) !== false ) {
-			$icon_type   = 'custom';
+		$menu_icon = get_post_meta( $settings->ID, 'menu_icon', true ) ?: 'dashicons-admin-generic';
+		if ( strpos( $menu_icon, 'http' ) !== false ) {
+			$icon_type = 'custom';
 		}
-		$settings_page = [ 
+		$settings_page = [
 			'menu_title'     => get_post_meta( $settings->ID, 'menu_name', true ) ?: $settings->post_title,
 			'id'             => $settings->post_name,
 			'menu_type'      => $menu_type,
@@ -93,14 +93,14 @@ class SettingsPages extends Base {
 			'style'          => 'no-boxes',
 			'columns'        => 1,
 		];
-		$parser = new \MBB\SettingsPage\Parser( $settings_page );
+		$parser        = new \MBB\SettingsPage\Parser( $settings_page );
 		$parser->parse_boolean_values()->parse_numeric_values();
 		update_post_meta( $this->post_id, 'settings', $parser->get_settings() );
 		$parser->parse();
 		update_post_meta( $this->post_id, 'settings_page', $parser->get_settings() );
 		$this->migrate_value( $settings->ID );
 
-		$this->delete_post( $settings->ID ) ;
+		$this->delete_post( $settings->ID );
 	}
 
 	private function migrate_value( $id ) {

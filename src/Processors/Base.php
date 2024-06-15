@@ -24,9 +24,9 @@ abstract class Base {
 		}
 		$output = array_filter( $output );
 
-		$_SESSION[ 'processed' ] += count( $items );
+		$_SESSION['processed'] += count( $items );
 		wp_send_json_success( [
-			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION[ 'processed' ] ) . '<br>' . implode( '<br>', $output ),
+			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION['processed'] ) . '<br>' . implode( '<br>', $output ),
 			'type'    => 'continue',
 		] );
 	}
@@ -34,7 +34,7 @@ abstract class Base {
 	abstract protected function get_items();
 	abstract protected function migrate_item();
 
-	protected function delete_post( $post_id ){
+	protected function delete_post( $post_id ) {
 		global $wpdb;
 		$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID = %d", $post_id ) );
 	}
@@ -52,10 +52,10 @@ abstract class Base {
 
 	public function get_col_values( $post_id, $search ) {
 		global $wpdb;
-		$sql  = "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s";
-		$s    = '%' . $wpdb->esc_like( $search ) . '%';
-		$cols = $wpdb->get_col( $wpdb->prepare( $sql, $post_id, $s ) );
-		$checks  = [];
+		$sql    = "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s";
+		$s      = '%' . $wpdb->esc_like( $search ) . '%';
+		$cols   = $wpdb->get_col( $wpdb->prepare( $sql, $post_id, $s ) );
+		$checks = [];
 		foreach ( $cols as $col ) {
 			if ( get_post_meta( $post_id, $col, true ) ) {
 				$checks[] = $col;
@@ -63,8 +63,8 @@ abstract class Base {
 		}
 
 		$values = [];
-		foreach ( $checks as $check ){
-			$values[] = str_replace( $search,'', $check );
+		foreach ( $checks as $check ) {
+			$values[] = str_replace( $search, '', $check );
 		}
 		return $values;
 	}

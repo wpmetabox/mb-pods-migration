@@ -8,11 +8,11 @@ class PostTypes extends Base {
 
 	protected function get_items() {
 
-		if ( $_SESSION[ 'processed' ] ) {
+		if ( $_SESSION['processed'] ) {
 			return [];
 		}
 
-		$query = new WP_Query( [ 
+		$query = new WP_Query( [
 			'post_type'              => '_pods_pod',
 			'post_status'            => 'any',
 			'posts_per_page'         => -1,
@@ -29,30 +29,30 @@ class PostTypes extends Base {
 	}
 
 	protected function migrate_post_types() {
-		    $id              = $this->item->ID;
-			$type            = get_post_meta( $id, 'type', true );
-			$slug            = $this->item->post_name;
-			if ( $type != 'post_type' || in_array( $slug, [ 'post', 'page'] ) ){
-				return;
-			}
-			$name            = $this->item->post_title;
-			$singular        = get_post_meta( $id, 'label_singular', true ) ?: $slug;
-			$menu_icon       = get_post_meta( $id, 'menu_icon', true ) ?: 'dashicons-admin-post';
-			if ( strpos( $menu_icon, "http" ) !== false ) {
-				$icon_type   = 'custom';
-			}
+			$id   = $this->item->ID;
+			$type = get_post_meta( $id, 'type', true );
+			$slug = $this->item->post_name;
+		if ( $type != 'post_type' || in_array( $slug, [ 'post', 'page' ] ) ) {
+			return;
+		}
+			$name      = $this->item->post_title;
+			$singular  = get_post_meta( $id, 'label_singular', true ) ?: $slug;
+			$menu_icon = get_post_meta( $id, 'menu_icon', true ) ?: 'dashicons-admin-post';
+		if ( strpos( $menu_icon, 'http' ) !== false ) {
+			$icon_type = 'custom';
+		}
 			$show_in_menu = ( get_post_meta( $id, 'show_in_menu', true ) == '0' ) ? false : true;
-			$labels  = [ 
+			$labels       = [
 				'name'                     => $name,
 				'singular_name'            => $singular,
 				'add_new'                  => get_post_meta( $id, 'label_add_new', true ) ?: 'Add new',
-				'add_new_item'             => get_post_meta( $id, 'label_add_new_item', true ) ?: 'Add new '. $singular,
+				'add_new_item'             => get_post_meta( $id, 'label_add_new_item', true ) ?: 'Add new ' . $singular,
 				'edit_item'                => get_post_meta( $id, 'label_edit_item', true ) ?: 'Edit ' . $singular,
 				'new_item'                 => get_post_meta( $id, 'label_new_item', true ) ?: 'New ' . $singular,
 				'view_item'                => get_post_meta( $id, 'label_view_item', true ) ?: 'View ' . $singular,
 				'view_items'               => get_post_meta( $id, 'label_view_items', true ) ?: 'View ' . $name,
 				'search_items'             => get_post_meta( $id, 'label_search_items', true ) ?: 'Search ' . $name,
-				'not_found'                => get_post_meta( $id, 'label_not_found', true ) ?:'No ' . $name . ' found.',
+				'not_found'                => get_post_meta( $id, 'label_not_found', true ) ?: 'No ' . $name . ' found.',
 				'not_found_in_trash'       => get_post_meta( $id, 'label_not_found_in_trash', true ) ?: 'No ' . $name . ' found in Trash.',
 				'parent_item_colon'        => get_post_meta( $id, 'label_parent_item_colon', true ) ?: 'Parent ' . $name,
 				'all_items'                => get_post_meta( $id, 'label_all_items', true ) ?: 'All ' . $name,
@@ -75,7 +75,7 @@ class PostTypes extends Base {
 				'item_scheduled'           => get_post_meta( $id, 'label_item_scheduled', true ) ?: $singular . ' scheduled.',
 				'item_updated'             => get_post_meta( $id, 'label_item_updated', true ) ?: $singular . ' updated.',
 			];
-			$args    = [ 
+			$args         = [
 				'slug'                => $slug,
 				'label'               => $name,
 				'labels'              => $labels,
@@ -93,30 +93,30 @@ class PostTypes extends Base {
 				'delete_with_user'    => get_post_meta( $id, 'delete_with_user', true ) ?: false,
 				'rest_base'           => get_post_meta( $id, 'rest_base', true ) ?: '',
 				'show_in_menu'        => get_post_meta( $id, 'menu_location_custom', true ) ?: $show_in_menu,
-				'menu_position'       => (int)get_post_meta( $id, 'menu_position', true ) ?: "",
+				'menu_position'       => (int) get_post_meta( $id, 'menu_position', true ) ?: '',
 				'icon_type'           => $icon_type ?? 'dashicons',
 				'menu_icon'           => $menu_icon,
 				'icon_custom'         => $menu_icon,
 				'capability_type'     => get_post_meta( $id, 'capability_type', true ) ?: 'post',
 				'has_archive'         => get_post_meta( $id, 'has_archive', true ) ?: false,
 				'archive_slug'        => get_post_meta( $id, 'has_archive_slug', true ) ?: '',
-				'supports'            => $this->get_col_values( $id, 'supports_') ?: [],
-				'taxonomies'          => $this->get_col_values( $id, 'built_in_taxonomies_') ?: [],
-				'rewrite'             => [ 
+				'supports'            => $this->get_col_values( $id, 'supports_' ) ?: [],
+				'taxonomies'          => $this->get_col_values( $id, 'built_in_taxonomies_' ) ?: [],
+				'rewrite'             => [
 					'with_front' => get_post_meta( $id, 'rewrite_with_front', true ) ?: false,
 					'slug'       => get_post_meta( $id, 'rewrite_custom_slug', true ) ?: '',
 				],
 			];
-			$content = wp_json_encode( $args, JSON_UNESCAPED_UNICODE );
-			$content = str_replace( '"1"', 'true', $content );
-			$post_id = $this->get_id_by_slug( $slug, 'mb-post-type' );
+			$content      = wp_json_encode( $args, JSON_UNESCAPED_UNICODE );
+			$content      = str_replace( '"1"', 'true', $content );
+			$post_id      = $this->get_id_by_slug( $slug, 'mb-post-type' );
 			if ( $post_id ) {
-				wp_update_post( [ 
+				wp_update_post( [
 					'ID'           => $post_id,
 					'post_content' => $content,
 				] );
 			} else {
-				wp_insert_post( [ 
+				wp_insert_post( [
 					'post_content' => $content,
 					'post_type'    => 'mb-post-type',
 					'post_title'   => $name,
@@ -125,6 +125,6 @@ class PostTypes extends Base {
 				], true );
 			}
 
-			$this->delete_post( $this->item->ID ) ;
+			$this->delete_post( $this->item->ID );
 	}
 }

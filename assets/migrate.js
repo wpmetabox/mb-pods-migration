@@ -5,7 +5,7 @@
 		button = document.querySelector( '#process' );
 
 	button.addEventListener( 'click', async () => {
-		if( confirm( i18n.notice ) == false ){
+		if ( confirm( i18n.notice ) == false ) {
 			return;
 		}
 		printMessage( i18n.start );

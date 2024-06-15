@@ -1,5 +1,6 @@
 <?php
 namespace MetaBox\Pods\Processors;
+
 use WP_Query;
 
 class Relationship extends Base {
@@ -32,28 +33,28 @@ class Relationship extends Base {
 			$this->migrate_values( $id );
 		}
 
-		wp_send_json_success( [ 
+		wp_send_json_success( [
 			'message' => __( 'Done', 'mb-pods-migration' ),
 			'type'    => 'done',
 		] );
 	}
 
-	private function migrate_relationship( $id ){
-		$type            = get_post_meta( $id, 'type', true );
-		$check           = get_post_meta( $id, 'pick_object', true ) ?: '';
-		if ( $type != 'pick' || $check == 'custom-simple' ){
+	private function migrate_relationship( $id ) {
+		$type  = get_post_meta( $id, 'type', true );
+		$check = get_post_meta( $id, 'pick_object', true ) ?: '';
+		if ( $type != 'pick' || $check == 'custom-simple' ) {
 			return;
 		}
 		$post_id = $this->create_post( $id );
 		$this->migrate_settings( $id, $post_id );
 	}
 
-	private function create_post($id) {
-		$slug   = get_post($id)->post_name;
-		$data   = [
-			'post_title'  => get_post($id)->post_title,
+	private function create_post( $id ) {
+		$slug = get_post( $id )->post_name;
+		$data = [
+			'post_title'  => get_post( $id )->post_title,
 			'post_type'   => 'mb-relationship',
-			'post_status' => get_post($id)->post_status,
+			'post_status' => get_post( $id )->post_status,
 			'post_name'   => $slug,
 		];
 
@@ -69,22 +70,22 @@ class Relationship extends Base {
 
 
 	private function migrate_settings( $id, $post_id ) {
-		$id_parent    = get_post($id)->post_parent;
-		$title        = get_post($id)->post_title;
-		$slug         = get_post($id)->post_name;
-		$object_type  = get_post_meta( $id, 'pick_object', true );
-		$from_type    = get_post( $id_parent )->post_name;
-		$to_type      = get_post_meta( $id, 'pick_val', true);
+		$id_parent   = get_post( $id )->post_parent;
+		$title       = get_post( $id )->post_title;
+		$slug        = get_post( $id )->post_name;
+		$object_type = get_post_meta( $id, 'pick_object', true );
+		$from_type   = get_post( $id_parent )->post_name;
+		$to_type     = get_post_meta( $id, 'pick_val', true );
 		switch ( $object_type ) {
 			case 'post_type':
-			$type = 'post';
-			break;
+				$type = 'post';
+				break;
 			case 'taxonomy':
-			$type = 'term';
-			break;
+				$type = 'term';
+				break;
 			default:
-			$type = $object_type;
-			break;
+				$type = $object_type;
+				break;
 		}
 		$settings = [
 			'id'         => $slug,
@@ -103,14 +104,14 @@ class Relationship extends Base {
 				],
 			],
 		];
-		if ( $type == 'post' ){
+		if ( $type == 'post' ) {
 			$settings['form']['post_type'] = $from_type;
-			$settings['to']['post_type'] = $to_type;
+			$settings['to']['post_type']   = $to_type;
 		}
 
-		if ( $type == 'term' ){
+		if ( $type == 'term' ) {
 			$settings['form']['taxonomy'] = $from_type;
-			$settings['to']['taxonomy'] = $to_type;
+			$settings['to']['taxonomy']   = $to_type;
 		}
 		update_post_meta( $post_id, 'relationship', $settings );
 		update_post_meta( $post_id, 'settings', $settings );
@@ -120,17 +121,17 @@ class Relationship extends Base {
 	private function migrate_values( $id ) {
 		list( $item_id, $related_item_id, $slug, $weight ) = $this->get_data( $id );
 		global $wpdb;
-		$sql    = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
-		$from   = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
+		$sql     = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
+		$from    = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
 		$weight += 1;
-		$check = [ 
+		$check   = [
 			'from' => $item_id,
 			'to'   => $related_item_id,
 		];
 		if ( self::check_insert_data( $from, $check ) ) {
 			$wpdb->query( $wpdb->prepare( $sql, (int) $item_id, (int) $related_item_id, $slug, (int) $weight ) );
 		}
-			
+
 	}
 
 	private function get_data( $id ) {
@@ -152,7 +153,7 @@ class Relationship extends Base {
 
 	private function check_insert_data( $array, $form_to ) {
 		foreach ( $array as $item ) {
-			if ( $item->from === $form_to['from'] && $item->to === $from_to['to']) {
+			if ( $item->from === $form_to['from'] && $item->to === $from_to['to'] ) {
 				return false;
 			}
 		}

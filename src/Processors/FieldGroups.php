@@ -8,11 +8,11 @@ use MBBParser\Parsers\MetaBox;
 class FieldGroups extends Base {
 	private $post_id;
 	private $settings = [];
-	private $fields = [];
+	private $fields   = [];
 
 	protected function get_items() {
 		// Process all field groups at once.
-		if ( $_SESSION[ 'processed' ] ) {
+		if ( $_SESSION['processed'] ) {
 			return [];
 		}
 
@@ -64,14 +64,14 @@ class FieldGroups extends Base {
 
 		$post_id = get_post_meta( $this->item->ID, 'meta_box_id', true );
 		if ( $post_id ) {
-			$this->post_id = $data[ 'ID' ] = $post_id;
+			$this->post_id = $data['ID'] = $post_id;
 			wp_update_post( $data );
 		} else {
 			$this->post_id = wp_insert_post( $data );
 		}
 
 		update_post_meta( $this->item->ID, 'meta_box_id', $this->post_id );
-		//$this->delete_post( $this->item->ID );
+		$this->delete_post( $this->item->ID );
 	}
 
 	private function migrate_settings() {
@@ -83,35 +83,35 @@ class FieldGroups extends Base {
 	private function migrate_location() {
 		$post_parent = $this->item->post_parent;
 		$object_type = get_post_meta( $post_parent, 'type', true );
-		$context  = get_post_meta( $post_parent, 'meta_box_context', true ) ?: 'advanced';
-		$priority = get_post_meta( $post_parent, 'meta_box_priority', true ) ?: 'default';
+		$context     = get_post_meta( $post_parent, 'meta_box_context', true ) ?: 'advanced';
+		$priority    = get_post_meta( $post_parent, 'meta_box_priority', true ) ?: 'default';
 
 		switch ( $object_type ) {
 			case 'post_type':
-			$type = 'post';
-			$this->settings['post_types'] = [ get_post( $post_parent )->post_name ];
-			$this->settings['context'] = ( $context == 'advanced' ) ? 'normal' : $context;
-			$this->settings['priority'] = ( $priority == 'default' ) ? 'high' : $priority;
-			break;
+				$type                         = 'post';
+				$this->settings['post_types'] = [ get_post( $post_parent )->post_name ];
+				$this->settings['context']    = ( $context == 'advanced' ) ? 'normal' : $context;
+				$this->settings['priority']   = ( $priority == 'default' ) ? 'high' : $priority;
+				break;
 			case 'taxonomy':
-			$type = 'term';
-			$this->settings['taxonomies'] = [ get_post( $post_parent )->post_name ];
-			break;
+				$type                         = 'term';
+				$this->settings['taxonomies'] = [ get_post( $post_parent )->post_name ];
+				break;
 			case 'settings':
-			$type = 'setting';
-			$this->settings['settings_pages'] = [ get_post( $post_parent )->post_name ];
-			break;
+				$type                             = 'setting';
+				$this->settings['settings_pages'] = [ get_post( $post_parent )->post_name ];
+				break;
 			default:
-			$type = $object_type;
-			break;
+				$type = $object_type;
+				break;
 		}
-		$roles      = get_post_meta( $this->item->ID, 'roles_allowed', true );
-		if ( empty( $roles ) ){
-			$this->settings[ 'object_type' ] = $type;
+		$roles = get_post_meta( $this->item->ID, 'roles_allowed', true );
+		if ( empty( $roles ) ) {
+			$this->settings['object_type'] = $type;
 			return;
 		}
-		if ( is_string( $roles ) ){
-			$id = uniqid();
+		if ( is_string( $roles ) ) {
+			$id                                = uniqid();
 			$this->settings['include_exclude'] = [
 				'type'     => 'include',
 				'relation' => 'OR',
@@ -119,18 +119,18 @@ class FieldGroups extends Base {
 					$id => [
 						'id'    => $id,
 						'name'  => 'user_role',
-						'value' => ['administrator'],
-						'label' => [ 'Administrator'],
-					]
-				]
+						'value' => [ 'administrator' ],
+						'label' => [ 'Administrator' ],
+					],
+				],
 			];
-			$this->settings[ 'object_type' ] = $type;
+			$this->settings['object_type']     = $type;
 			return;
 		}
-		$role_names = wp_roles()->get_names();
-		$role_names = array_intersect_key( $role_names, array_flip( $roles ) );
-		$labels     = array_values( $role_names );
-		$id = uniqid();
+		$role_names                        = wp_roles()->get_names();
+		$role_names                        = array_intersect_key( $role_names, array_flip( $roles ) );
+		$labels                            = array_values( $role_names );
+		$id                                = uniqid();
 		$this->settings['include_exclude'] = [
 			'type'     => 'include',
 			'relation' => 'OR',
@@ -140,31 +140,31 @@ class FieldGroups extends Base {
 					'name'  => 'user_role',
 					'value' => $roles,
 					'label' => $labels,
-				]
-			]
+				],
+			],
 		];
 
-		$this->settings[ 'object_type' ] = $type;
+		$this->settings['object_type'] = $type;
 
 	}
 
 	private function migrate_fields() {
-		$fields = new FieldGroups\Fields( $this->item->post_parent, $this->item->ID );
+		$fields       = new FieldGroups\Fields( $this->item->post_parent, $this->item->ID );
 		$this->fields = $fields->migrate_fields();
 
 		update_post_meta( $this->post_id, 'fields', $this->fields );
 	}
 
 	private function save_id() {
-		$object_type = $this->settings[ 'object_type' ];
+		$object_type = $this->settings['object_type'];
 
-		if ( empty( $_SESSION[ 'field_groups' ] ) ) {
-			$_SESSION[ 'field_groups' ] = [];
+		if ( empty( $_SESSION['field_groups'] ) ) {
+			$_SESSION['field_groups'] = [];
 		}
-		if ( empty( $_SESSION[ 'field_groups' ][ $object_type ] ) ) {
-			$_SESSION[ 'field_groups' ][ $object_type ] = [];
+		if ( empty( $_SESSION['field_groups'][ $object_type ] ) ) {
+			$_SESSION['field_groups'][ $object_type ] = [];
 		}
-		$_SESSION[ 'field_groups' ][ $object_type ][] = $this->item->ID;
+		$_SESSION['field_groups'][ $object_type ][] = $this->item->ID;
 	}
 
 }
