@@ -105,6 +105,9 @@ class FieldType {
 			case 'multiselect':
 				$type = 'select';
 				break;
+			case 'autocomplete':
+				$type = 'autocomplete';
+				break;
 			default:
 				$type = 'select_advanced';
 				break;
