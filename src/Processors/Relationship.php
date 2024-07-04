@@ -151,9 +151,9 @@ class Relationship extends Base {
 		return $wpdb->get_var( $wpdb->prepare( $sql, $conditional_value ) );
 	}
 
-	private function check_insert_data( $array, $form_to ) {
+	private function check_insert_data( $array,  $from_to ) {
 		foreach ( $array as $item ) {
-			if ( $item->from === $form_to['from'] && $item->to === $from_to['to'] ) {
+			if ( $item->from ===  $from_to['from'] && $item->to ===  $from_to['to'] ) {
 				return false;
 			}
 		}

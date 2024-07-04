@@ -79,7 +79,7 @@ class PostTypes extends Base {
 				'slug'                => $slug,
 				'label'               => $name,
 				'labels'              => $labels,
-				'description'         => $this->$item->post_content,
+				'description'         => $this->item->post_content,
 				'public'              => get_post_meta( $id, 'public', true ) ?: false,
 				'hierarchical'        => get_post_meta( $id, 'hierarchical', true ) ?: false,
 				'exclude_from_search' => get_post_meta( $id, 'exclude_from_search', true ) ?: false,
