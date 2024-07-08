@@ -105,12 +105,12 @@ class Relationship extends Base {
 			],
 		];
 		if ( $type == 'post' ) {
-			$settings['form']['post_type'] = $from_type;
+			$settings['from']['post_type'] = $from_type;
 			$settings['to']['post_type']   = $to_type;
 		}
 
 		if ( $type == 'term' ) {
-			$settings['form']['taxonomy'] = $from_type;
+			$settings['from']['taxonomy'] = $from_type;
 			$settings['to']['taxonomy']   = $to_type;
 		}
 		update_post_meta( $post_id, 'relationship', $settings );
