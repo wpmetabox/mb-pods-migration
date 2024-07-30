@@ -1,0 +1,108 @@
+{
+    "packages": [
+        {
+            "name": "meta-box/mbb-parser",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wpmetabox/mbb-parser.git",
+                "reference": "447e6cda3450cf9920de764db23b4b297acc2bd2"
+            },
+            "require": {
+                "meta-box/support": "dev-master",
+                "riimu/kit-phpencoder": "^2.4"
+            },
+            "time": "2024-07-03T03:08:11+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-4": {
+                    "MBBParser\\": "src/"
+                }
+            },
+            "description": "Parse meta box settings from JSON",
+            "install-path": "../meta-box/mbb-parser"
+        },
+        {
+            "name": "meta-box/support",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wpmetabox/support.git",
+                "reference": "21ac638244f63c9372ff9958810552a1a26135d9"
+            },
+            "time": "2022-07-27T10:00:48+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-4": {
+                    "MetaBox\\Support\\": ""
+                }
+            },
+            "license": [
+                "GNU GPL-2.0"
+            ],
+            "description": "Helpers for Meta Box plugins",
+            "homepage": "https://metabox.io",
+            "install-path": "../meta-box/support"
+        },
+        {
+            "name": "riimu/kit-phpencoder",
+            "version": "v2.4.2",
+            "version_normalized": "2.4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Riimu/Kit-PHPEncoder.git",
+                "reference": "72ff7825de193b272e17b228394819dbfc638e72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Riimu/Kit-PHPEncoder/zipball/72ff7825de193b272e17b228394819dbfc638e72",
+                "reference": "72ff7825de193b272e17b228394819dbfc638e72",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "time": "2022-12-10T18:12:25+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Riimu\\Kit\\PHPEncoder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Riikka Kalliomäki",
+                    "email": "riikka.kalliomaki@gmail.com",
+                    "homepage": "http://riimu.net"
+                }
+            ],
+            "description": "Highly customizable alternative to var_export for PHP code generation",
+            "homepage": "http://kit.riimu.net",
+            "keywords": [
+                "code",
+                "encoder",
+                "export",
+                "generator",
+                "variable"
+            ],
+            "support": {
+                "issues": "https://github.com/Riimu/Kit-PHPEncoder/issues",
+                "source": "https://github.com/Riimu/Kit-PHPEncoder/tree/v2.4.2"
+            },
+            "install-path": "../riimu/kit-phpencoder"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
