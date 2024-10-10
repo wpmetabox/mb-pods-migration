@@ -72,7 +72,7 @@ class AdminPage {
 				</li>
 			</ul>
 			<p><a href="https://docs.metabox.io/extensions/mb-pods-migration/"
-					target="_blank"><?php esc_html_e( 'Read the documentation carefully before processing' ) ?> &rarr;</a></p>
+					target="_blank"><?php esc_html_e( 'Read the documentation carefully before processing', 'mb-pods-migration' ) ?> &rarr;</a></p>
 			<div id="status"></div>
 		</div>
 		<?php

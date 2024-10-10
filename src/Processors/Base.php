@@ -26,7 +26,8 @@ abstract class Base {
 
 		$_SESSION['processed'] += count( $items );
 		wp_send_json_success( [
-			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION['processed'] ) . '<br>' . implode( '<br>', $output ),
+			// Translators: %d - count items.
+			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION['processed'] ) . '<br>' . implode( '<br>', $output ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,  WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			'type'    => 'continue',
 		] );
 	}
@@ -36,6 +37,7 @@ abstract class Base {
 
 	protected function delete_post( $post_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->posts WHERE ID = %d", $post_id ) );
 	}
 
@@ -44,17 +46,18 @@ abstract class Base {
 		if ( ! $slug ) {
 			return null;
 		}
-		$sql = "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s";
-		$id  = $wpdb->get_var( $wpdb->prepare( $sql, $post_type, $slug ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$id  = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s", $post_type, $slug ) );
 
 		return $id;
 	}
 
 	public function get_col_values( $post_id, $search ) {
 		global $wpdb;
-		$sql    = "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s";
 		$s      = '%' . $wpdb->esc_like( $search ) . '%';
-		$cols   = $wpdb->get_col( $wpdb->prepare( $sql, $post_id, $s ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$cols   = $wpdb->get_col( $wpdb->prepare( "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s", $post_id, $s ) );
 		$checks = [];
 		foreach ( $cols as $col ) {
 			if ( get_post_meta( $post_id, $col, true ) ) {
