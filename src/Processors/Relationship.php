@@ -28,6 +28,8 @@ class Relationship extends Base {
 		}
 
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$ids = $wpdb->get_col( "SELECT id FROM `{$wpdb->prefix}podsrel`" );
 		foreach ( $ids as $id ) {
 			$this->migrate_values( $id );
@@ -122,6 +124,8 @@ class Relationship extends Base {
 		list( $item_id, $related_item_id, $slug, $weight ) = $this->get_data( $id );
 		global $wpdb;
 		$sql     = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$from    = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
 		$weight += 1;
 		$check   = [
@@ -129,6 +133,7 @@ class Relationship extends Base {
 			'to'   => $related_item_id,
 		];
 		if ( self::check_insert_data( $from, $check ) ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query( $wpdb->prepare( $sql, (int) $item_id, (int) $related_item_id, $slug, (int) $weight ) );
 		}
 
@@ -147,8 +152,9 @@ class Relationship extends Base {
 
 	private function get_col_single_value( $table, $col, $conditional_col, $conditional_value ) {
 		global $wpdb;
-		$sql = "SELECT `{$col}` FROM `{$wpdb->prefix}{$table}` WHERE `{$conditional_col}`=%s";
-		return $wpdb->get_var( $wpdb->prepare( $sql, $conditional_value ) );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var( $wpdb->prepare( "SELECT `{$col}` FROM `{$wpdb->prefix}{$table}` WHERE `{$conditional_col}`=%s", $conditional_value ) );
 	}
 
 	private function check_insert_data( $array,  $from_to ) {
