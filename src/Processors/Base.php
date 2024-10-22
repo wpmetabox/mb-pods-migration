@@ -24,10 +24,12 @@ abstract class Base {
 		}
 		$output = array_filter( $output );
 
-		$_SESSION['processed'] += count( $items );
+		if ( isset( $_SESSION['processed'] ) ) {
+			(int) $_SESSION['processed'] += count( $items );
+		}
 		wp_send_json_success( [
 			// Translators: %d - count items.
-			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION['processed'] ) . '<br>' . implode( '<br>', $output ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,  WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), isset( $_SESSION['processed'] ) ? (int) $_SESSION['processed'] : 0 ) . '<br>' . implode( '<br>', $output ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,  WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			'type'    => 'continue',
 		] );
 	}
