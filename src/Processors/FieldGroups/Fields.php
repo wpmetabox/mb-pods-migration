@@ -83,5 +83,4 @@ class Fields {
 
 		$this->fields[ $settings['_id'] ] = $settings;
 	}
-
 }

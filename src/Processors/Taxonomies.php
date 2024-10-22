@@ -107,5 +107,4 @@ class Taxonomies extends Base {
 
 			$this->delete_post( $this->item->ID );
 	}
-
 }

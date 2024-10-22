@@ -123,7 +123,7 @@ class Relationship extends Base {
 	private function migrate_values( $id ) {
 		list( $item_id, $related_item_id, $slug, $weight ) = $this->get_data( $id );
 		global $wpdb;
-		$sql     = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
+		$sql = "INSERT INTO `{$wpdb->prefix}mb_relationships` (`from`, `to`, `type`, `order_from`) VALUES (%d, %d, %s, %d)";
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$from    = $wpdb->get_results( "SELECT `from`, `to` FROM `{$wpdb->prefix}mb_relationships` WHERE `type` = '{$slug}'" );
@@ -136,7 +136,6 @@ class Relationship extends Base {
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query( $wpdb->prepare( $sql, (int) $item_id, (int) $related_item_id, $slug, (int) $weight ) );
 		}
-
 	}
 
 	private function get_data( $id ) {
@@ -157,9 +156,9 @@ class Relationship extends Base {
 		return $wpdb->get_var( $wpdb->prepare( "SELECT `{$col}` FROM `{$wpdb->prefix}{$table}` WHERE `{$conditional_col}`=%s", $conditional_value ) );
 	}
 
-	private function check_insert_data( $array,  $from_to ) {
+	private function check_insert_data( $array, $from_to ) {
 		foreach ( $array as $item ) {
-			if ( $item->from ===  $from_to['from'] && $item->to ===  $from_to['to'] ) {
+			if ( $item->from === $from_to['from'] && $item->to === $from_to['to'] ) {
 				return false;
 			}
 		}

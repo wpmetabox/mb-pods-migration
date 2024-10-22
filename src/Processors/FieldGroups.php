@@ -146,7 +146,6 @@ class FieldGroups extends Base {
 		];
 
 		$this->settings['object_type'] = $type;
-
 	}
 
 	private function migrate_fields() {
@@ -167,5 +166,4 @@ class FieldGroups extends Base {
 		}
 		$_SESSION['field_groups'][ $object_type ][] = $this->item->ID;
 	}
-
 }

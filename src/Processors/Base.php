@@ -49,14 +49,14 @@ abstract class Base {
 			return null;
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$id  = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s", $post_type, $slug ) );
+		$id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s", $post_type, $slug ) );
 
 		return $id;
 	}
 
 	public function get_col_values( $post_id, $search ) {
 		global $wpdb;
-		$s      = '%' . $wpdb->esc_like( $search ) . '%';
+		$s = '%' . $wpdb->esc_like( $search ) . '%';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$cols   = $wpdb->get_col( $wpdb->prepare( "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s", $post_id, $s ) );
