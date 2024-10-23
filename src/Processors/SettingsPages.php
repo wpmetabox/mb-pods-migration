@@ -14,8 +14,7 @@ class SettingsPages extends Base {
 	protected function get_items() {
 
 		// Process all settings pages at once.
-		// phpcs: ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( isset( $_SESSION['processed'] ) ) {
+		if ( ! empty( $_SESSION['processed'] ) ) {
 			return [];
 		}
 

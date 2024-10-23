@@ -60,7 +60,6 @@ class FieldType {
 		$this->_id        = $this->type . '_' . uniqid();
 		$this->_state     = 'collapse';
 		$this->save_field = true;
-
 	}
 
 	private function migrate_website() {
@@ -117,7 +116,6 @@ class FieldType {
 
 		$pick_custom   = get_post_meta( $this->post_id, 'pick_custom', true );
 		$this->options = str_replace( '|', ': ', $pick_custom );
-
 	}
 
 	private function migrate_file() {
@@ -153,7 +151,6 @@ class FieldType {
 			$values[] = "$key: $value";
 		}
 		$this->options = implode( "\n", $values );
-
 	}
 
 	private function migrate_html() {

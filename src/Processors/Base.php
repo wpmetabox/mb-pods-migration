@@ -17,17 +17,17 @@ abstract class Base {
 			] );
 		}
 
-		$output = [];
 		foreach ( $items as $item ) {
 			$this->item = $item;
-			$output[]   = $this->migrate_item();
+			$this->migrate_item();
 		}
-		$output = array_filter( $output );
 
-		$_SESSION['processed'] += count( $items );
+		if ( isset( $_SESSION['processed'] ) ) {
+			$_SESSION['processed'] += count( $items );
+		}
 		wp_send_json_success( [
 			// Translators: %d - count items.
-			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), $_SESSION['processed'] ) . '<br>' . implode( '<br>', $output ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,  WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			'message' => sprintf( __( 'Processed %d items...', 'mb-pods-migration' ), isset( $_SESSION['processed'] ) ? (int) $_SESSION['processed'] : 0 ) . '<br>',
 			'type'    => 'continue',
 		] );
 	}
@@ -47,14 +47,14 @@ abstract class Base {
 			return null;
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$id  = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s", $post_type, $slug ) );
+		$id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_name LIKE %s", $post_type, $slug ) );
 
 		return $id;
 	}
 
 	public function get_col_values( $post_id, $search ) {
 		global $wpdb;
-		$s      = '%' . $wpdb->esc_like( $search ) . '%';
+		$s = '%' . $wpdb->esc_like( $search ) . '%';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$cols   = $wpdb->get_col( $wpdb->prepare( "SELECT meta_key  FROM $wpdb->postmeta WHERE post_id=%d AND meta_key LIKE %s", $post_id, $s ) );

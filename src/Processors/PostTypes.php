@@ -8,8 +8,7 @@ class PostTypes extends Base {
 
 	protected function get_items() {
 
-		// phpcs: ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( isset( $_SESSION['processed'] ) ) {
+		if ( ! empty( $_SESSION['processed'] ) ) {
 			return [];
 		}
 

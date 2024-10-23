@@ -8,7 +8,6 @@
  * Author URI:  https://metabox.io
  * License:     GPL2+
  * Text Domain: mb-pods-migration
- * Domain Path: /languages/
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -29,7 +28,7 @@ if ( ! function_exists( 'mb_pods_load' ) ) {
 
 		define( 'MBPODS_DIR', __DIR__ );
 
-		new MetaBox\Pods\AdminPage;
-		new MetaBox\Pods\Ajax;
+		new MetaBox\Pods\AdminPage();
+		new MetaBox\Pods\Ajax();
 	}
 }

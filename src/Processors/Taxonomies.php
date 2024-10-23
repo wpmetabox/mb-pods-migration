@@ -8,8 +8,7 @@ class Taxonomies extends Base {
 
 	protected function get_items() {
 
-		// phpcs: ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( isset( $_SESSION['processed'] ) ) {
+		if ( ! empty( $_SESSION['processed'] ) ) {
 			return [];
 		}
 
@@ -107,5 +106,4 @@ class Taxonomies extends Base {
 
 			$this->delete_post( $this->item->ID );
 	}
-
 }

@@ -40,6 +40,6 @@ class Ajax {
 		}
 		$type  = str_replace( ' ', '', ucwords( str_replace( '_', ' ', $type ) ) );
 		$class = "MetaBox\Pods\Processors\\$type";
-		return new $class;
+		return new $class();
 	}
 }

@@ -12,8 +12,7 @@ class FieldGroups extends Base {
 
 	protected function get_items() {
 		// Process all field groups at once.
-		// phpcs: ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( isset( $_SESSION['processed'] ) ) {
+		if ( ! empty( $_SESSION['processed'] ) ) {
 			return [];
 		}
 
@@ -146,7 +145,6 @@ class FieldGroups extends Base {
 		];
 
 		$this->settings['object_type'] = $type;
-
 	}
 
 	private function migrate_fields() {
@@ -167,5 +165,4 @@ class FieldGroups extends Base {
 		}
 		$_SESSION['field_groups'][ $object_type ][] = $this->item->ID;
 	}
-
 }
