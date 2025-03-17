@@ -1,5 +1,5 @@
 {
-	"name": "meta-box/mb-pods-migration",
+	"name": "wpmetabox/mb-pods-migration",
 	"type": "wordpress-plugin",
 	"keywords": [
 		"wordpress",
@@ -21,18 +21,8 @@
 	"config": {
 		"prepend-autoloader": false
 	},
-	"repositories": [
-		{
-			"type": "git",
-			"url": "https://github.com/wpmetabox/support.git"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/wpmetabox/mbb-parser.git"
-		}
-	],
 	"require": {
-		"meta-box/support": "dev-master",
-		"meta-box/mbb-parser": "dev-master"
+		"wpmetabox/support": "dev-master",
+		"wpmetabox/mbb-parser": "dev-master"
 	}
 }
