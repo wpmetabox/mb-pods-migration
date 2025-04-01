@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Riimu\\Kit\\PHPEncoder\\' => array($vendorDir . '/riimu/kit-phpencoder/src'),
-    'MetaBox\\Support\\' => array($vendorDir . '/meta-box/support'),
+    'MetaBox\\Support\\' => array($vendorDir . '/wpmetabox/support'),
     'MetaBox\\Pods\\' => array($baseDir . '/src'),
-    'MBBParser\\' => array($vendorDir . '/meta-box/mbb-parser/src'),
+    'MBBParser\\' => array($vendorDir . '/wpmetabox/mbb-parser/src'),
 );

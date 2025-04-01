@@ -26,7 +26,7 @@ class ComposerStaticInit8ed120314d65f97ac2a801ac1b7a53e9
         ),
         'MetaBox\\Support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/meta-box/support',
+            0 => __DIR__ . '/..' . '/wpmetabox/support',
         ),
         'MetaBox\\Pods\\' => 
         array (
@@ -34,7 +34,7 @@ class ComposerStaticInit8ed120314d65f97ac2a801ac1b7a53e9
         ),
         'MBBParser\\' => 
         array (
-            0 => __DIR__ . '/..' . '/meta-box/mbb-parser/src',
+            0 => __DIR__ . '/..' . '/wpmetabox/mbb-parser/src',
         ),
     );
 

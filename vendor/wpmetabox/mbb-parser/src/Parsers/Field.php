@@ -15,7 +15,38 @@ class Field extends Base {
 		'image_upload'   => [ 'max_status' ],
 		'video'          => [ 'max_status' ],
 	];
-	private $choice_types   = [ 'select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete' ];
+
+	/**
+	 * Remove these settings if they are false.
+	 *
+	 * @var array
+	 */
+	protected $remove_false = [
+		// Group related settings.
+		'clone',
+		'clone_as_multiple',
+		'clone_default',
+		'clone_empty_start',
+		'collapsible',
+		'sort_clone',
+		// Date
+		'timestamp',
+		// File, Video
+		'force_delete',
+		// Select
+		'flatten',
+		'multiple',
+		// WYSIWYG
+		'raw',
+		// Color
+		'alpha_channel',
+		// Image
+		'required',
+		'disabled',
+		'readonly',
+	];
+
+	private $choice_types = [ 'select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete' ];
 
 	public function parse() {
 		// Remove collapse/expand state.
@@ -143,6 +174,10 @@ class Field extends Base {
 	}
 
 	private function parse_choice_std() {
+		if ( ! in_array( $this->type, $this->choice_types ) ) {
+			return $this;
+		}
+
 		$is_multiple = $this->multiple
 			|| in_array( $this->type, [ 'checkbox_list', 'autocomplete' ] )
 			|| in_array( $this->field_type, [ 'select_tree', 'checkbox_tree', 'checkbox_list', 'checkbox_tree' ] );
@@ -223,7 +258,10 @@ class Field extends Base {
 			return $this;
 		}
 
-		$data = array_intersect_key( $this->text_limiter, [ 'limit' => '', 'limit_type' => '' ] );
+		$data = array_intersect_key( $this->text_limiter, [
+			'limit'      => '',
+			'limit_type' => '',
+		] );
 		foreach ( $data as $key => $value ) {
 			$this->$key = $value;
 		}
