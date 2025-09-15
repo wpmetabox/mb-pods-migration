@@ -59,19 +59,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wpmetabox/mbb-parser.git",
-                "reference": "c0fe9d81797f946eaccb3cb2ce979e2869d030f2"
+                "reference": "5d9067c9ef7b52961190dcfd559d42a1a12b9bc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wpmetabox/mbb-parser/zipball/c0fe9d81797f946eaccb3cb2ce979e2869d030f2",
-                "reference": "c0fe9d81797f946eaccb3cb2ce979e2869d030f2",
+                "url": "https://api.github.com/repos/wpmetabox/mbb-parser/zipball/5d9067c9ef7b52961190dcfd559d42a1a12b9bc1",
+                "reference": "5d9067c9ef7b52961190dcfd559d42a1a12b9bc1",
                 "shasum": ""
             },
             "require": {
                 "riimu/kit-phpencoder": "^2.4",
                 "wpmetabox/support": "dev-master"
             },
-            "time": "2025-03-27T12:29:01+00:00",
+            "time": "2025-09-14T11:45:37+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
@@ -98,15 +98,15 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wpmetabox/support.git",
-                "reference": "874318ec497ce7fb918eb0629dec825210155d97"
+                "reference": "6c392347cdb77ed133b8a4227b5ee20db89a5717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wpmetabox/support/zipball/874318ec497ce7fb918eb0629dec825210155d97",
-                "reference": "874318ec497ce7fb918eb0629dec825210155d97",
+                "url": "https://api.github.com/repos/wpmetabox/support/zipball/6c392347cdb77ed133b8a4227b5ee20db89a5717",
+                "reference": "6c392347cdb77ed133b8a4227b5ee20db89a5717",
                 "shasum": ""
             },
-            "time": "2025-03-17T08:34:51+00:00",
+            "time": "2025-09-12T23:29:48+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
@@ -128,6 +128,6 @@
             "install-path": "../wpmetabox/support"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }
