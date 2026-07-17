@@ -7,11 +7,11 @@ namespace Composer\Autoload;
 class ComposerStaticInit8ed120314d65f97ac2a801ac1b7a53e9
 {
     public static $prefixLengthsPsr4 = array (
-        'R' => 
+        'R' =>
         array (
             'Riimu\\Kit\\PHPEncoder\\' => 21,
         ),
-        'M' => 
+        'M' =>
         array (
             'MetaBox\\Support\\' => 16,
             'MetaBox\\Pods\\' => 13,
@@ -20,19 +20,19 @@ class ComposerStaticInit8ed120314d65f97ac2a801ac1b7a53e9
     );
 
     public static $prefixDirsPsr4 = array (
-        'Riimu\\Kit\\PHPEncoder\\' => 
+        'Riimu\\Kit\\PHPEncoder\\' =>
         array (
             0 => __DIR__ . '/..' . '/riimu/kit-phpencoder/src',
         ),
-        'MetaBox\\Support\\' => 
+        'MetaBox\\Support\\' =>
         array (
             0 => __DIR__ . '/..' . '/wpmetabox/support',
         ),
-        'MetaBox\\Pods\\' => 
+        'MetaBox\\Pods\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'MBBParser\\' => 
+        'MBBParser\\' =>
         array (
             0 => __DIR__ . '/..' . '/wpmetabox/mbb-parser/src',
         ),

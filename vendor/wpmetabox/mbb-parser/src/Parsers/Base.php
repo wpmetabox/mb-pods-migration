@@ -59,7 +59,7 @@ class Base {
 			} );
 
 			// Don't remove allowed empty keys.
-			if ( in_array( $key, $this->empty_keys ) ) {
+			if ( in_array( $key, $this->empty_keys, true ) ) {
 				continue;
 			}
 
@@ -72,7 +72,7 @@ class Base {
 					continue;
 				}
 
-				if ( ! in_array( $key, $this->remove_false ) ) {
+				if ( ! in_array( $key, $this->remove_false, true ) ) {
 					continue;
 				}
 
@@ -165,7 +165,7 @@ class Base {
 		$minimal_condition = $data;
 
 		// Remove relation if the value is AND
-		if ( 'and' === $data['relation'] ) {
+		if ( 'and' === ( $data['relation'] ?? 'and' ) ) {
 			unset( $minimal_condition['relation'] );
 		}
 
@@ -189,9 +189,12 @@ class Base {
 		return $this;
 	}
 
-	protected function parse_json_dot_notations( $array ) {
+	protected function parse_json_dot_notations( array $arr ): array {
 		// Parse JSON notation.
-		foreach ( $array as &$value ) {
+		foreach ( $arr as &$value ) {
+			if ( ! is_string( $value ) ) {
+				continue;
+			}
 			$json = json_decode( stripslashes( $value ), true );
 			if ( is_array( $json ) ) {
 				$value = $json;
@@ -199,7 +202,7 @@ class Base {
 		}
 
 		// Parse dot notation.
-		return Arr::unflatten( $array );
+		return Arr::unflatten( $arr );
 	}
 
 	protected function remove_default( $key, $value ) {

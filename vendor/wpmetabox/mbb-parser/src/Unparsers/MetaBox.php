@@ -1,6 +1,8 @@
 <?php
 namespace MBBParser\Unparsers;
 
+use MBBParser\Prefixer;
+
 /**
  * This class is the inverse of the parser.
  * We convert the parsed data back to the format that can be saved to the database.
@@ -8,7 +10,10 @@ namespace MBBParser\Unparsers;
  * This is to compatibility and allow users to import/export data between different versions, even with other plugins like ACF.
  */
 class MetaBox extends Base {
-	// Allows these keys to be empty as they are required to be compatible with the builder.
+	/**
+	 * Allows these keys to be empty as they are required to be compatible with the builder.
+	 * @var string[]
+	 */
 	protected $empty_keys = [ 'fields', 'meta_box', 'settings', 'data', 'modified' ];
 
 	private $settings_parser;
@@ -44,7 +49,7 @@ class MetaBox extends Base {
 		$this->unparse_schema();
 		$this->unparse_meta_box();
 		$this->unparse_relationship();
-		$this->unparse_settings_page();
+		$this->unparse_settings_page()->unparse_settings_page_tabs();
 		$this->unparse_post_fields();
 		$this->unparse_modified();
 		$this->unparse_settings();
@@ -90,6 +95,11 @@ class MetaBox extends Base {
 			unset( $settings[ $key ] );
 		}
 
+		// Strip prefix from field IDs before exporting to JSON (minimal format)
+		if ( ! empty( $settings['fields'] ) && is_array( $settings['fields'] ) ) {
+			Prefixer::remove( $settings['fields'], $settings['prefix'] ?? '' );
+		}
+
 		ksort( $settings );
 
 		return $settings;
@@ -107,7 +117,11 @@ class MetaBox extends Base {
 		return $this;
 	}
 
-	public function unparse_tabs() {
+	private function unparse_tabs(): self {
+		if ( $this->detect_post_type() !== 'meta-box' ) {
+			return $this;
+		}
+
 		$tabs = $this->lookup( [ 'tabs', 'meta_box.tabs' ], [] );
 
 		if ( empty( $tabs ) ) {
@@ -159,6 +173,10 @@ class MetaBox extends Base {
 				$icon_type = 'url';
 			}
 
+			if ( $icon_type === 'dashicons' && str_starts_with( $icon, 'dashicons-' ) ) {
+				$icon = substr( $icon, strlen( 'dashicons-' ) );
+			}
+
 			$tab_field = [
 				'id'        => $field['tab'],
 				'_id'       => $field['tab'],
@@ -170,6 +188,7 @@ class MetaBox extends Base {
 				'icon_url'  => $icon_type === 'url' ? $icon : '',
 			];
 
+			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 			if ( ! in_array( $field['tab'], $added_tabs ) ) {
 				$new_fields[ $field['tab'] ] = $tab_field;
 				$added_tabs[]                = $tab_field;
@@ -251,21 +270,52 @@ class MetaBox extends Base {
 		return $this;
 	}
 
-	public function unparse_meta_box() {
+	/**
+	 * Unparse the meta box.
+	 *
+	 * For fields:
+	 * - Always keep it as a numeric array.
+	 * - Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
+	 * - Add prefix to field IDs for parsed meta box, that's ready for registering.
+	 */
+	public function unparse_meta_box(): self {
 		// If not meta box, return
 		if ( $this->detect_post_type() !== 'meta-box' ) {
 			return $this;
 		}
 
+		$prefix = $this->lookup( [ 'prefix', 'settings.prefix' ], '' );
+
+		// If meta box is already parsed, normalize the fields array.
 		if ( isset( $this->meta_box ) && is_array( $this->meta_box ) ) {
 			// Fix: error on earlier versions that saved fields as object
-			$fields                               = array_values( $this->meta_box['fields'] ?? [] );
+			$fields = $this->meta_box['fields'] ?? [];
+			$fields = array_values( $fields );
+
+			// Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
+			Prefixer::remove( $fields, $prefix );
+			$this->fields = $fields;
+
+			// Add prefix to field IDs for parsed meta box, that's ready for registering.
+			Prefixer::add( $fields, $prefix );
 			$this->settings['meta_box']['fields'] = $fields;
 
 			return $this;
 		}
 
+		// If meta box is not parsed, normalize the fields array.
+		$fields = $this->fields ?: [];
+		$fields = array_values( $fields );
+
+		// Remove prefix from field IDs for the settings, that can be used for export, builder, local JSON.
+		Prefixer::remove( $fields, $prefix );
+		$this->fields = $fields;
+
 		$meta_box = $this->get_settings();
+
+		// Add prefix to field IDs for parsed meta box, that's ready for registering.
+		Prefixer::add( $fields, $prefix );
+		$meta_box['fields'] = $fields;
 
 		foreach ( $this->get_unneeded_keys() as $key ) {
 			unset( $meta_box[ $key ] );
@@ -277,8 +327,7 @@ class MetaBox extends Base {
 		return $this;
 	}
 
-	public function unparse_settings_page() {
-		// If not meta box, return
+	public function unparse_settings_page(): self {
 		if ( $this->detect_post_type() !== 'mb-settings-page' ) {
 			return $this;
 		}
@@ -296,6 +345,27 @@ class MetaBox extends Base {
 
 		$this->settings_page = $settings_page;
 		$this->post_title    = $this->lookup( [ 'menu_title', 'id' ] );
+
+		return $this;
+	}
+
+	private function unparse_settings_page_tabs(): self {
+		if ( $this->detect_post_type() !== 'mb-settings-page' ) {
+			return $this;
+		}
+
+		$tabs = $this->lookup( [ 'tabs' ], [] );
+		if ( empty( $tabs ) ) {
+			return $this;
+		}
+
+		$tab_items = [];
+		foreach ( $tabs as $key => $value ) {
+			$id               = uniqid( 'tab_' );
+			$tab_items[ $id ] = compact( 'id', 'key', 'value' );
+		}
+
+		$this->settings['tabs'] = $tab_items;
 
 		return $this;
 	}
@@ -351,7 +421,7 @@ class MetaBox extends Base {
 		$settings = array_merge( $this->lookup( [ 'settings' ], [] ), $settings );
 
 		foreach ( $this->settings as $key => $value ) {
-			if ( in_array( $key, $this->get_unneeded_keys() ) ) {
+			if ( in_array( $key, $this->get_unneeded_keys(), true ) ) {
 				continue;
 			}
 
@@ -380,7 +450,7 @@ class MetaBox extends Base {
 
 		$this->post_type    = $post_type;
 		$this->post_name    = $this->lookup( [ 'post_name', 'settings.id', 'relationship.id', 'meta_box.id', 'id' ] );
-		$this->post_date    = $this->lookup( [ 'post_date' ], date( 'Y-m-d H:i:s' ) );
+		$this->post_date    = $this->lookup( [ 'post_date' ], gmdate( 'Y-m-d H:i:s' ) );
 		$this->post_status  = $this->lookup( [ 'post_status' ], 'publish' );
 		$this->post_content = $this->lookup( [ 'post_content' ], '' );
 
@@ -414,15 +484,12 @@ class MetaBox extends Base {
 		return 'meta-box';
 	}
 
-	public function unparse_fields() {
-		$fields = $this->settings['meta_box']['fields'];
-
-		if ( empty( $fields ) ) {
+	public function unparse_fields(): self {
+		if ( empty( $this->fields ) ) {
 			return $this;
 		}
 
-		$fields                   = $this->convert_fields_for_builder( $fields );
-		$this->settings['fields'] = $fields;
+		$this->fields = $this->convert_fields_for_builder( $this->fields );
 
 		return $this;
 	}
