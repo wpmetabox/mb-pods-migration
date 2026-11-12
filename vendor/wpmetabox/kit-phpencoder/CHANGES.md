@@ -1,5 +1,11 @@
 # Changelog #
 
+## v2.4.3 (2026-11-11) ##
+
+  * Fork as `wpmetabox/kit-phpencoder` (replaces `riimu/kit-phpencoder`)
+  * Fix PHP 8.4 implicitly nullable parameter deprecation
+  * Require PHP 7.1+
+
 ## v2.4.2 (2022-12-10) ##
 
   * Added tests to ensure PHP 8.2 compatibility

@@ -22,7 +22,7 @@ class Field extends Base {
 	 * @return void
 	 */
 	public function unparse() {
-		$this->original_keys = array_keys( $this->settings );
+		$this->original_keys = array_diff( array_keys( $this->settings ), [ '_id' ] );
 
 		$this->unparse_default_values()
 			->unparse_boolean_values()
@@ -214,23 +214,24 @@ class Field extends Base {
 		$this->_id = $this->_id ?? ( $this->type ?? '' ) . '_' . uniqid();
 
 		$key_defaults = [
-			'id'                => $this->id,
-			'_id'               => $this->_id,
-			'save_field'        => true,
-			'label_description' => '',
-			'desc'              => '',
-			'size'              => '',
-			'hide_from_rest'    => false,
-			'hide_from_front'   => false,
-			'before'            => '',
-			'after'             => '',
-			'class'             => '',
-			'sanitize_callback' => '',
-			'required'          => false,
-			'disabled'          => false,
-			'readonly'          => false,
-			'prepend'           => '',
-			'append'            => '',
+			'id'                       => $this->id,
+			'_id'                      => $this->_id,
+			'save_field'               => true,
+			'label_description'        => '',
+			'desc'                     => '',
+			'size'                     => '',
+			'hide_from_rest'           => false,
+			'hide_from_front'          => false,
+			'hide_from_block_bindings' => false,
+			'before'                   => '',
+			'after'                    => '',
+			'class'                    => '',
+			'sanitize_callback'        => '',
+			'required'                 => false,
+			'disabled'                 => false,
+			'readonly'                 => false,
+			'prepend'                  => '',
+			'append'                   => '',
 		];
 
 		foreach ( $key_defaults as $key => $default ) {

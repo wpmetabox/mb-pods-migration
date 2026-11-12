@@ -22,7 +22,7 @@ class ComposerStaticInit8ed120314d65f97ac2a801ac1b7a53e9
     public static $prefixDirsPsr4 = array (
         'Riimu\\Kit\\PHPEncoder\\' =>
         array (
-            0 => __DIR__ . '/..' . '/riimu/kit-phpencoder/src',
+            0 => __DIR__ . '/..' . '/wpmetabox/kit-phpencoder/src',
         ),
         'MetaBox\\Support\\' =>
         array (

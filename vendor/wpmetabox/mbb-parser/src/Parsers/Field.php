@@ -1,6 +1,8 @@
 <?php
 namespace MBBParser\Parsers;
 
+use Throwable;
+
 class Field extends Base {
 	/**
 	 * Allow these settings to be empty.
@@ -52,6 +54,7 @@ class Field extends Base {
 		'readonly',
 		'hide_from_rest',
 		'hide_from_front',
+		'hide_from_block_bindings',
 	];
 
 	private $choice_types = [ 'select', 'radio', 'checkbox_list', 'select_advanced', 'button_group', 'image_select', 'autocomplete' ];
@@ -109,7 +112,7 @@ class Field extends Base {
 	}
 
 	private function parse_object_field() {
-		if ( ! in_array( $this->type, [ 'taxonomy', 'taxonomy_advanced', 'post', 'user' ], true ) ) {
+		if ( ! in_array( $this->type, [ 'taxonomy', 'taxonomy_advanced', 'post', 'user', 'model' ], true ) ) {
 			return $this;
 		}
 		unset( $this->terms );
@@ -151,14 +154,13 @@ class Field extends Base {
 		// Use callback: function_name format.
 		if ( is_string( $this->options ) && str_starts_with( $this->options, 'callback:' ) ) {
 			$callback = trim( str_replace( 'callback:', '', $this->options ) );
-			if ( is_callable( $callback ) ) {
-				try {
-					$this->options = call_user_func( $callback );
-				} catch ( \Throwable $th ) {
-					$this->options = [];
-				}
-				$this->_callback = $callback; // For using in the encoders.
+			try {
+				$this->options = is_callable( $callback ) ? call_user_func( $callback ) : [];
+			} catch ( Throwable $th ) {
+				$this->options = [];
 			}
+			// Keep it even if the function is not loaded yet, so the generated code still calls it.
+			$this->_callback = $callback;
 			return $this;
 		}
 

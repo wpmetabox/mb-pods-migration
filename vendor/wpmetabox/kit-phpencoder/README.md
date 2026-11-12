@@ -1,5 +1,7 @@
 # PHP Variable Exporter #
 
+> Fork of [Riimu/Kit-PHPEncoder](https://github.com/Riimu/Kit-PHPEncoder), which is no longer maintained, with fixes for PHP 8.4+. Install with `composer require wpmetabox/kit-phpencoder`. It replaces `riimu/kit-phpencoder` and keeps the same namespace.
+
 *PHPEncoder* is a PHP library for exporting variables and generating PHP code
 representations for said variables similar to the built in function
 `var_export()`. Compared to the built in function, however, this library

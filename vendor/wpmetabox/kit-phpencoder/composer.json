@@ -1,5 +1,5 @@
 {
-  "name": "riimu/kit-phpencoder",
+  "name": "wpmetabox/kit-phpencoder",
   "description": "Highly customizable alternative to var_export for PHP code generation",
   "license": "MIT",
   "type": "library",
@@ -19,7 +19,10 @@
   ],
   "homepage": "http://kit.riimu.net",
   "require": {
-    "php": ">=5.6.0"
+    "php": ">=7.1"
+  },
+  "replace": {
+    "riimu/kit-phpencoder": "self.version"
   },
   "autoload": {
     "psr-4": {
@@ -34,10 +37,10 @@
   },
   "scripts": {
     "ci-all": [
-      "composer test -- --do-not-cache-result",
-      "composer phpcs -- --no-cache",
-      "composer php-cs-fixer -- --dry-run --diff --using-cache=no",
-      "composer normalize --dry-run"
+      "@test --do-not-cache-result",
+      "@phpcs --no-cache",
+      "@php-cs-fixer --dry-run --diff --using-cache=no",
+      "@composer normalize --dry-run"
     ],
     "php-cs-fixer": "php-cs-fixer fix -v",
     "phpcs": "phpcs -p",
